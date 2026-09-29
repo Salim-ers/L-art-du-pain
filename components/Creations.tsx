@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { site } from "@/content/site";
+import { site, type Img } from "@/content/site";
 import { canHover } from "@/lib/scroll";
 import { SectionLabel } from "./SectionLabel";
 import { EditorialHeading } from "./EditorialHeading";
@@ -9,9 +9,10 @@ import { Reveal } from "./Reveal";
 import { Media } from "./Media";
 import { ProductCategory } from "./ProductCategory";
 
-export function Creations() {
+export type CreationCat = { id: string; title: string; image: Img; href: string };
+
+export function Creations({ cats }: { cats: CreationCat[] }) {
   const c = site.creations;
-  const cats = site.categories;
   const [active, setActive] = useState<number | null>(null);
   const follow = useRef<HTMLDivElement>(null);
   const pos = useRef({ tx: -999, ty: -999, cx: -999, cy: -999 });
@@ -72,7 +73,7 @@ export function Creations() {
               index={i}
               title={cat.title}
               image={cat.image}
-              href={cat.href ?? "#boutique"}
+              href={cat.href}
               onEnter={() => setActive(i)}
               onLeave={() => setActive((a) => (a === i ? null : a))}
             />

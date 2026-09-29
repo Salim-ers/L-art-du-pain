@@ -22,7 +22,7 @@ export function Location() {
     <section id="boutique" className="section location">
       <div className="wrap location-grid">
         <div className="location-text">
-          <SectionLabel>04 — La boutique</SectionLabel>
+          <SectionLabel>La boutique</SectionLabel>
           <h2 className="h-xl"><Line>Venez nous voir.</Line></h2>
           <Reveal as="address" className="location-address">
             <strong>{site.name}</strong>
@@ -53,6 +53,7 @@ export function Location() {
 
           <div className="location-actions">
             <MagneticButton href={links.directions} external variant="solid">Ouvrir l’itinéraire ↗</MagneticButton>
+            <MagneticButton href={links.waze} external>Venir avec Waze ↗</MagneticButton>
             {phone && <MagneticButton href={"tel:" + phone.tel}>Appeler</MagneticButton>}
           </div>
         </div>

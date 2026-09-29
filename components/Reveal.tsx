@@ -33,9 +33,10 @@ export function Reveal({ as: Tag = "div", kind = "up", delay = 0, className = ""
       },
       { rootMargin: "0px 0px -12% 0px", threshold: 0.05 }
     );
-    io.observe(el);
+    // Une ligne masquée est entièrement rognée par son parent : on observe le parent.
+    io.observe(kind === "line" && el.parentElement ? el.parentElement : el);
     return () => io.disconnect();
-  }, []);
+  }, [kind]);
 
   const s = { ...style, "--d": delay + "s" } as CSSProperties;
   return (

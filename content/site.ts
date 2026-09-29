@@ -1,13 +1,12 @@
 /**
- * L’ART DU PAIN — contenu central du site.
- * Toute information affichée vient d’ici. Modifiez ce fichier, rien d’autre.
- * Règle : une valeur `null` ou un tableau vide = l’élément n’est PAS affiché
- * (aucune information inventée n’est publiée).
+ * L’ART DU PAIN — contenu éditorial et identité (NAP) du site.
+ * Le catalogue, les campagnes, la galerie, les avis et les horaires de retrait sont gérés depuis /admin.
+ * Règle : une valeur `null` ou un tableau vide = l’élément n’est PAS affiché (aucune information inventée n’est publiée).
+ * ⚠️ Nom, adresse et téléphone doivent rester STRICTEMENT identiques à la fiche Google Business Profile.
  */
 
 export type Img = { src: string | null; alt: string; placeholder?: string };
 export type GalleryFormat = "wide" | "portrait" | "square" | "landscape" | "medium";
-export type Review = { text: string; author: string; source?: string; date?: string };
 
 export type SiteContent = {
   name: string;
@@ -22,46 +21,42 @@ export type SiteContent = {
     schema: { days: string[]; opens: string; closes: string }[];
   } | null;
   social: { instagram: string | null; facebook: string | null };
-  links: { directions: string; maps: string };
+  links: { directions: string; maps: string; waze: string; review: string };
   hero: { image: string | null; imageAlt: string; video: string | null };
   nav: { label: string; href: string }[];
+  menu: { label: string; href: string }[];
   manifesto: { label: string; title: string[]; paragraphs: string[] };
   editorial: { label: string; title: string[]; text: string; main: Img; detail: Img };
   creations: { label: string; title: string[]; intro: string };
-  categories: { id: string; title: string; image: Img; href?: string }[];
-  signature: {
-    label: string;
-    name: string;
-    description: string;
-    note: string | null;
-    image: Img;
-  } | null;
   marquee: string[];
-  craft: { label: string; title: [string, string]; steps: { title: string; image: Img }[] };
+  craft: { label: string; title: [string, string]; intro: string; steps: { title: string; text: string; image: Img }[] };
   immersive: { image: Img; words: string[] };
   breath: string[];
-  gallery: { caption: string; format: GalleryFormat; image: Img }[];
-  reviews: Review[];
+  local: { title: string; paragraphs: string[]; towns: { name: string; text: string }[] };
   legal: { publisher: string | null; siret: string | null; host: string };
 };
 
-const ADDRESS_QUERY = encodeURIComponent("L'Art du Pain, 28 Avenue Saint-Exupéry, 60180 Nogent-sur-Oise");
+const ADDRESS = "28 Avenue Saint-Exupéry, 60180 Nogent-sur-Oise";
+const ADDRESS_QUERY = encodeURIComponent("L'Art du Pain, " + ADDRESS);
+const GEO = null as SiteContent["geo"]; // ex. { lat: 49.27xx, lng: 2.46xx } — active le pin exact (carte, Waze, Schema.org)
 
 export const site: SiteContent = {
   name: "L’Art du Pain",
   // ⚠️ À remplacer par le vrai nom de domaine avant mise en ligne (canonical, sitemap, OpenGraph).
-  url: "https://www.lartdupain-nogent.fr",
+  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.lartdupain-nogent.fr",
   tagline: "Le savoir-faire artisanal, façonné chaque jour.",
 
   seo: {
-    title: "L’Art du Pain | Boulangerie artisanale à Nogent-sur-Oise",
+    title: "L’Art du Pain | Boulangerie pâtisserie artisanale à Nogent-sur-Oise",
     description:
-      "L’Art du Pain, boulangerie et pâtisserie artisanale à Nogent-sur-Oise. Pains, viennoiseries, pâtisseries et salé façonnés chaque jour, 28 Avenue Saint-Exupéry.",
+      "L’Art du Pain, boulangerie pâtisserie artisanale à Nogent-sur-Oise, près de Creil. Pains, viennoiseries, pâtisseries, gâteaux sur mesure et bûches de Noël. Commande en ligne et Click & Collect.",
     keywords: [
       "Boulangerie Nogent-sur-Oise",
-      "Boulangerie artisanale Nogent-sur-Oise",
+      "Boulangerie pâtisserie Nogent-sur-Oise",
       "Pâtisserie Nogent-sur-Oise",
-      "L’Art du Pain Nogent-sur-Oise",
+      "Boulangerie près de Creil",
+      "Gâteau anniversaire Nogent-sur-Oise",
+      "Click & Collect boulangerie Nogent-sur-Oise",
     ],
     ogImage: "/images/boutique-interieur.png",
   },
@@ -73,11 +68,11 @@ export const site: SiteContent = {
     region: "Hauts-de-France",
     country: "FR",
   },
-  // Coordonnées GPS exactes de la boutique (active le pin sur la carte + Schema.org). null = non renseigné.
-  geo: null,
+  geo: GEO,
 
   phone: { display: "03 65 65 89 09", tel: "+33365658909" },
 
+  // Affichage + Schema.org. Les créneaux de retrait suivent les horaires définis dans /admin/parametres.
   hours: {
     display: "Tous les jours, 6h00 — 21h00",
     schema: [
@@ -95,6 +90,11 @@ export const site: SiteContent = {
   links: {
     directions: "https://www.google.com/maps/dir/?api=1&destination=" + ADDRESS_QUERY,
     maps: "https://www.google.com/maps/search/?api=1&query=" + ADDRESS_QUERY,
+    waze: GEO
+      ? `https://waze.com/ul?ll=${GEO.lat},${GEO.lng}&navigate=yes`
+      : "https://waze.com/ul?q=" + encodeURIComponent(ADDRESS) + "&navigate=yes",
+    // Remplacé par le lien « Laisser un avis » de la fiche Google, s’il est renseigné dans /admin/parametres.
+    review: "https://www.google.com/maps/search/?api=1&query=" + ADDRESS_QUERY,
   },
 
   hero: {
@@ -104,11 +104,28 @@ export const site: SiteContent = {
     video: null,
   },
 
+  // Barre de navigation (bureau)
   nav: [
-    { label: "La Maison", href: "/#maison" },
-    { label: "Nos créations", href: "/#creations" },
-    { label: "Le savoir-faire", href: "/#geste" },
-    { label: "Galerie", href: "/#galerie" },
+    { label: "La Maison", href: "/la-maison" },
+    { label: "Nos créations", href: "/nos-creations" },
+    { label: "Sur mesure", href: "/gateaux-sur-mesure" },
+    { label: "Noël", href: "/noel" },
+    { label: "Galerie", href: "/galerie" },
+    { label: "Nous trouver", href: "/nous-trouver" },
+  ],
+
+  // Menu complet (plein écran)
+  menu: [
+    { label: "Accueil", href: "/" },
+    { label: "La Maison", href: "/la-maison" },
+    { label: "Nos créations", href: "/nos-creations" },
+    { label: "Commander", href: "/commander" },
+    { label: "Gâteaux sur mesure", href: "/gateaux-sur-mesure" },
+    { label: "Événements", href: "/evenements" },
+    { label: "Noël & Fêtes", href: "/noel" },
+    { label: "Galerie", href: "/galerie" },
+    { label: "Notre savoir-faire", href: "/savoir-faire" },
+    { label: "Nous trouver", href: "/nous-trouver" },
   ],
 
   manifesto: {
@@ -131,24 +148,7 @@ export const site: SiteContent = {
   creations: {
     label: "02 — Les créations",
     title: ["Chaque envie", "a son moment."],
-    intro: "Cinq familles, une même exigence. Survolez pour entrevoir.",
-  },
-
-  // Retirez une entrée si la catégorie n’existe pas réellement en boutique.
-  categories: [
-    { id: "pains", title: "Les Pains", image: { src: "/images/pains.png", alt: "Baguettes dorées" } },
-    { id: "viennoiseries", title: "Les Viennoiseries", image: { src: "/images/viennoiseries.png", alt: "Croissants et pains au chocolat" } },
-    { id: "patisseries", title: "Les Pâtisseries", image: { src: "/images/patisseries-vitrine.png", alt: "Vitrine de pâtisseries" } },
-    { id: "sale", title: "Le Salé", image: { src: "/images/sale.png", alt: "Snacking salé" } },
-    { id: "gourmandises", title: "Les Gourmandises", image: { src: "/images/entremets-coeur.png", alt: "Entremets cœur" } },
-  ],
-
-  signature: {
-    label: "La création du moment",
-    name: "La Religieuse",
-    description: "Pâte à choux, crème onctueuse, glaçage chocolat. Signée du sceau de la Maison.",
-    note: "Composition, allergènes et prix — à confirmer par la Maison",
-    image: { src: "/images/religieuse.png", alt: "Religieuse au chocolat, sceau L’Art du Pain" },
+    intro: "Sept familles, une même exigence. Survolez pour entrevoir, cliquez pour commander.",
   },
 
   marquee: ["Façonné", "Doré", "Croustillant", "Chaque jour"],
@@ -156,12 +156,14 @@ export const site: SiteContent = {
   craft: {
     label: "03 — Le geste",
     title: ["Derrière chaque", "création, "],
+    intro:
+      "Pas de raccourci : la pâte est pétrie, façonnée et cuite sur place, au rythme qu’elle impose. Voici les cinq temps qui font un pain, une viennoiserie ou un gâteau de la Maison.",
     steps: [
-      { title: "Pétrir", image: { src: null, alt: "Pétrissage", placeholder: "Photo — mains dans la farine" } },
-      { title: "Façonner", image: { src: null, alt: "Façonnage", placeholder: "Photo — façonnage du pâton" } },
-      { title: "Laisser le temps", image: { src: null, alt: "Pousse", placeholder: "Photo — pousse en bannetons" } },
-      { title: "Cuire", image: { src: null, alt: "Cuisson", placeholder: "Photo — enfournement, buée" } },
-      { title: "Partager", image: { src: null, alt: "Comptoir", placeholder: "Photo — comptoir, échange" } },
+      { title: "Pétrir", text: "Farine, eau, sel, levain : le pétrissage donne sa structure à la pâte.", image: { src: null, alt: "Pétrissage", placeholder: "Photo — mains dans la farine" } },
+      { title: "Façonner", text: "Chaque pâton est façonné à la main, un par un.", image: { src: null, alt: "Façonnage", placeholder: "Photo — façonnage du pâton" } },
+      { title: "Laisser le temps", text: "La fermentation développe les arômes : elle ne se presse pas.", image: { src: null, alt: "Pousse", placeholder: "Photo — pousse en bannetons" } },
+      { title: "Cuire", text: "Four chaud, buée, croûte qui se forme et chante en refroidissant.", image: { src: null, alt: "Cuisson", placeholder: "Photo — enfournement, buée" } },
+      { title: "Partager", text: "Au comptoir, le matin, pour vous.", image: { src: null, alt: "Comptoir", placeholder: "Photo — comptoir, échange" } },
     ],
   },
 
@@ -172,20 +174,20 @@ export const site: SiteContent = {
 
   breath: ["Faire simple.", "Le faire bien.", "Tous les jours."],
 
-  gallery: [
-    { caption: "L’intérieur", format: "wide", image: { src: "/images/boutique-interieur.png", alt: "Intérieur de la boutique" } },
-    { caption: "Les pains", format: "portrait", image: { src: "/images/pains.png", alt: "Baguettes" } },
-    { caption: "La collection", format: "wide", image: { src: "/images/patisseries-collection.png", alt: "Plateau de pâtisseries" } },
-    { caption: "Viennoiseries", format: "landscape", image: { src: "/images/viennoiseries.png", alt: "Croissants et pains au chocolat" } },
-    { caption: "Le salé", format: "medium", image: { src: "/images/sale.png", alt: "Snacking salé" } },
-    { caption: "La Religieuse", format: "square", image: { src: "/images/religieuse.png", alt: "Religieuse au chocolat" } },
-    { caption: "La vitrine", format: "landscape", image: { src: "/images/patisseries-vitrine.png", alt: "Vitrine de pâtisseries" } },
-    { caption: "La boutique", format: "wide", image: { src: "/images/boutique.png", alt: "La boutique L’Art du Pain" } },
-  ],
-
-  // Uniquement de VRAIS avis (Google, etc.). Tableau vide = section masquée.
-  // Exemple : { text: "…", author: "Prénom N.", source: "Google" }
-  reviews: [],
+  local: {
+    title: "Boulangerie pâtisserie à Nogent-sur-Oise",
+    paragraphs: [
+      "L’Art du Pain est installée au 28 Avenue Saint-Exupéry, à Nogent-sur-Oise. Chaque jour, nous y préparons pains, viennoiseries, pâtisseries et snacking salé, du premier croissant du matin à la baguette du soir.",
+      "Pour gagner du temps, commandez en ligne et retirez en boutique à l’heure de votre choix : c’est notre Click & Collect. Pour un anniversaire, un baptême ou un événement d’entreprise, nous réalisons aussi des gâteaux personnalisés, et chaque hiver une collection de bûches de Noël à précommander.",
+    ],
+    towns: [
+      { name: "Nogent-sur-Oise", text: "La boutique, au 28 Avenue Saint-Exupéry." },
+      { name: "Creil", text: "Juste de l’autre côté de l’Oise : commandez avant de passer." },
+      { name: "Montataire", text: "Un détour rapide pour vos commandes du week-end." },
+      { name: "Villers-Saint-Paul", text: "Gâteaux d’anniversaire et bûches à retirer sans attendre." },
+      { name: "Monchy-Saint-Éloi", text: "Pain et viennoiseries réservés, prêts à votre arrivée." },
+    ],
+  },
 
   legal: {
     publisher: null, // Raison sociale + forme juridique

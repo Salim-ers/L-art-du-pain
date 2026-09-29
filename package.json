@@ -5,17 +5,35 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file-if-exists=.env.local scripts/migrate.ts",
+    "db:reset-local": "node -e \"require('fs').rmSync('.data/pglite',{recursive:true,force:true})\""
   },
   "dependencies": {
-    "next": "^14.2.25",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "@electric-sql/pglite": "^0.5.8",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.3",
+    "jose": "^6.2.12",
+    "next": "^14.2.35",
+    "postgres": "^3.4.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "server-only": "^0.0.1",
+    "stripe": "^22.6.2",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.16.0",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15",
     "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

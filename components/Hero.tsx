@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { site } from "@/content/site";
 import { prefersReducedMotion, useScrollFrame } from "@/lib/scroll";
@@ -44,7 +45,7 @@ export function Hero() {
         <span aria-hidden="true" />
         <div className="hero-main">
           <p className="hero-kicker hero-in" style={v(0)}>
-            Boulangerie • Pâtisserie — {site.address.city}
+            Boulangerie • Pâtisserie artisanale — {site.address.city}
           </p>
           <h1 className="hero-title">
             <span className="line"><span className="w" style={v(0)}>L’ART</span></span>
@@ -52,10 +53,22 @@ export function Hero() {
           </h1>
           <div className="hero-foot">
             <p className="hero-tag hero-in" style={v(2)}>{site.tagline}</p>
-            <a href="#maison" className="ulink hero-link hero-in" style={v(3)}>
-              <span>Découvrir la Maison</span>
-              <span className="arrow" aria-hidden="true">↘</span>
-            </a>
+            <div className="hero-actions hero-in" style={v(3)}>
+              <Link href="/commander" className="hero-order">
+                <span className="roll">
+                  <span>Commander</span>
+                  <span aria-hidden="true">Commander</span>
+                </span>
+                <span className="arrow" aria-hidden="true">→</span>
+              </Link>
+              <Link href="/gateaux-sur-mesure" className="ulink hero-link">
+                <span>Commande personnalisée</span>
+              </Link>
+              <a href="#maison" className="ulink hero-link">
+                <span>Découvrir la Maison</span>
+                <span className="arrow" aria-hidden="true">↘</span>
+              </a>
+            </div>
           </div>
         </div>
         <div className="hero-cue" aria-hidden="true">

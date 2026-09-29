@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { site } from "@/content/site";
 
-/** Full-screen menu: black curtain drops, large serif entries rise one by one. */
+/** Menu plein écran : le rideau tombe, les grandes entrées serif montent une à une. */
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const first = useRef<HTMLAnchorElement>(null);
 
@@ -22,7 +23,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
     };
   }, [open, onClose]);
 
-  const items = [...site.nav, { label: "Nous trouver", href: "/#boutique" }];
+  const tab = open ? 0 : -1;
 
   return (
     <div id="menu" className="menu" role="dialog" aria-modal="true" aria-label="Menu" data-open={open ? "" : undefined} aria-hidden={!open}>
@@ -31,30 +32,37 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           <Image src="/images/logo.png" alt="" width={1100} height={1100} />
           <span>{site.name}</span>
         </span>
-        <button type="button" className="menu-close" onClick={onClose} aria-label="Fermer le menu" tabIndex={open ? 0 : -1}>
+        <button type="button" className="menu-close" onClick={onClose} aria-label="Fermer le menu" tabIndex={tab}>
           Fermer
         </button>
       </div>
-      <nav className="menu-nav" aria-label="Navigation mobile">
-        {items.map((l, i) => (
-          <a
+      <nav className="menu-nav" aria-label="Navigation complète">
+        {site.menu.map((l, i) => (
+          <Link
             key={l.href}
             ref={i === 0 ? first : undefined}
             href={l.href}
             onClick={onClose}
-            tabIndex={open ? 0 : -1}
-            className={i === items.length - 1 ? "it terra" : undefined}
+            tabIndex={tab}
+            className={l.href === "/commander" ? "it terra" : undefined}
             style={{ ["--i" as string]: i } as CSSProperties}
           >
             <span>{l.label}</span>
-          </a>
+          </Link>
         ))}
       </nav>
       <div className="menu-foot">
-        <span>{site.address.street} — {site.address.postalCode} {site.address.city}</span>
         <div className="menu-actions">
-          <a href={site.links.directions} target="_blank" rel="noopener noreferrer" tabIndex={open ? 0 : -1}>Itinéraire ↗</a>
-          {site.phone && <a href={"tel:" + site.phone.tel} tabIndex={open ? 0 : -1}>{site.phone.display}</a>}
+          <Link href="/commander" onClick={onClose} tabIndex={tab}>Commander</Link>
+          <Link href="/gateaux-sur-mesure" onClick={onClose} tabIndex={tab}>Commande personnalisée</Link>
+        </div>
+        <div className="menu-meta">
+          <span>{site.address.street} — {site.address.postalCode} {site.address.city}</span>
+          <span className="menu-meta-links">
+            <a href={site.links.directions} target="_blank" rel="noopener noreferrer" tabIndex={tab}>Itinéraire ↗</a>
+            {site.phone && <a href={"tel:" + site.phone.tel} tabIndex={tab}>{site.phone.display}</a>}
+            <Link href="/compte" onClick={onClose} tabIndex={tab}>Mon compte</Link>
+          </span>
         </div>
       </div>
     </div>

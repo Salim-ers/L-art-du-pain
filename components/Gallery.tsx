@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { site } from "@/content/site";
+import type { GalleryFormat, Img } from "@/content/site";
 import { Media } from "./Media";
 import { Reveal } from "./Reveal";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /** Full-bleed carousel: centred slide in focus, neighbours bleed off-screen. Drag, arrows, keys, lightbox. */
-export function Gallery() {
-  const items = site.gallery;
+export type GalleryItem = { caption: string; format: GalleryFormat; image: Img };
+
+export function Gallery({ items }: { items: GalleryItem[] }) {
   const view = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const slides = useRef<(HTMLElement | null)[]>([]);
@@ -126,7 +127,7 @@ export function Gallery() {
     <section id="galerie" className="gallery">
       <div className="gallery-head section">
         <Reveal as="h2" className="h-lg">La Galerie</Reveal>
-        <Reveal as="p" className="label label--soft">Boutique • Fournil • Créations</Reveal>
+        <a href="/galerie" className="ulink label label--soft"><span>Toute la galerie</span><span className="arrow" aria-hidden="true">→</span></a>
       </div>
 
       <div
