@@ -3,7 +3,7 @@
  * ⚠️ Catalogue et prix de DÉMONSTRATION : à vérifier / remplacer par la Maison depuis /admin avant la mise en ligne.
  */
 import bcrypt from "bcryptjs";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { defaultSettings } from "@/lib/settings-shared";
 import type { DB } from "./index";
 import * as s from "./schema";
@@ -296,12 +296,34 @@ export async function seed(db: DB) {
   });
 }
 
-/** Premier compte super administrateur (ADMIN_EMAIL / ADMIN_PASSWORD), créé tant qu'aucun compte n'existe. */
+/**
+ * Compte super administrateur défini par ADMIN_EMAIL / ADMIN_PASSWORD (variables Vercel) :
+ * créé s'il n'existe pas encore, même si la base a démarré avant l'ajout des variables.
+ * ADMIN_RESET_PASSWORD=1 réapplique le mot de passe au redémarrage (à retirer ensuite).
+ * En local sans variables : admin@lartdupain.local / boulangerie-dev.
+ */
+export const adminEnv = () => ({
+  email: process.env.ADMIN_EMAIL?.trim().toLowerCase() || null,
+  password: process.env.ADMIN_PASSWORD?.trim() || null,
+});
+
 export async function ensureAdmin(db: DB) {
+  const { email, password } = adminEnv();
+  if (email && password) {
+    const [existing] = await db.select().from(s.users).where(eq(s.users.email, email));
+    if (!existing) {
+      await db.insert(s.users).values({ email, name: "Administrateur", passwordHash: await bcrypt.hash(password, 12), role: "SUPER_ADMIN" }).onConflictDoNothing();
+    } else if (process.env.ADMIN_RESET_PASSWORD === "1") {
+      await db
+        .update(s.users)
+        .set({ passwordHash: await bcrypt.hash(password, 12), active: true, role: "SUPER_ADMIN", tokenVersion: existing.tokenVersion + 1 })
+        .where(eq(s.users.id, existing.id));
+    }
+    return;
+  }
+  if (process.env.NODE_ENV === "production") return;
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(s.users);
-  if (n > 0) return;
-  const email = (process.env.ADMIN_EMAIL || "admin@lartdupain.local").toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === "production" ? null : "boulangerie-dev");
-  if (!password) return;
-  await db.insert(s.users).values({ email, name: "Administrateur", passwordHash: await bcrypt.hash(password, 12), role: "SUPER_ADMIN" }).onConflictDoNothing();
+  if (n === 0) {
+    await db.insert(s.users).values({ email: "admin@lartdupain.local", name: "Administrateur", passwordHash: await bcrypt.hash("boulangerie-dev", 12), role: "SUPER_ADMIN" }).onConflictDoNothing();
+  }
 }

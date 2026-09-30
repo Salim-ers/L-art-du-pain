@@ -317,3 +317,5 @@ a.akpi:hover { transform: translateY(-2px); box-shadow: 0 6px 18px -10px rgba(0,
   .aprint-break { break-before: page; }
   .abadge { border: 1px solid currentColor; }
 }
+.alogin-diag { list-style: none; margin: 0; padding: 10px 12px; border-radius: 6px; background: var(--a-err-bg); display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--a-err); }
+.alogin-diag li[data-ok] { color: var(--a-ok); }

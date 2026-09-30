@@ -1,12 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySession } from "@/lib/auth/token";
+import { SESSION_COOKIE } from "@/lib/auth/token";
 
-/** Première barrière : toute page /admin exige une session signée valide (le rôle est revérifié côté serveur). */
-export async function middleware(req: NextRequest) {
+/**
+ * Première barrière légère : sans cookie de session, retour à la connexion.
+ * La vérification complète (signature, compte actif, rôle) est faite côté serveur sur chaque page et action.
+ */
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (pathname === "/admin/login") return NextResponse.next();
-  const claims = await verifySession(req.cookies.get(SESSION_COOKIE)?.value);
-  if (!claims) {
+  if (!req.cookies.get(SESSION_COOKIE)?.value) {
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";
