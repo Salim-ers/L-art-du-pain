@@ -11,7 +11,7 @@ import { customAction } from "@/lib/custom";
 import { getDb, schema as s } from "@/lib/db";
 import type { Role, User } from "@/lib/db/schema";
 import { isIsoDate } from "@/lib/dates";
-import { env } from "@/lib/env";
+import { canSignSessions } from "@/lib/env";
 import { slugify } from "@/lib/format";
 import { ALLERGENS } from "@/lib/labels";
 import { mails, sendEmail, sendMessage } from "@/lib/notify";
@@ -80,7 +80,7 @@ async function run(fd: FormData, min: Role, fallback: string, fn: (u: User) => P
 /* ---------- Authentification ---------- */
 let DUMMY: string | undefined;
 export async function login(_: unknown, fd: FormData) {
-  if (env.isProd && (!env.authSecret || env.authSecret.length < 32)) return { error: "Configuration incomplète : ajoutez la variable AUTH_SECRET (32 caractères minimum) dans Vercel, puis redéployez." };
+  if (!canSignSessions()) return { error: "Base de données non connectée : connectez Neon dans Vercel (Storage), puis redéployez." };
   const email = str(fd, "email").toLowerCase();
   const password = String(fd.get("password") ?? "");
   const ip = clientIp();

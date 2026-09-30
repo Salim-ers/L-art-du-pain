@@ -14,7 +14,6 @@ export default async function LoginPage() {
       <div className="alogin-card">
         <p className="alogin-brand">L’Art du Pain</p>
         <h1>Espace de gestion</h1>
-        {env.isProd && !env.authSecret && <p className="aerr">Variable AUTH_SECRET manquante dans Vercel : la connexion est impossible tant qu’elle n’est pas ajoutée.</p>}
         {env.ephemeralDb && <p className="aerr">Aucune base de données connectée (DATABASE_URL) : les données sont temporaires. Connectez Neon depuis Vercel → Storage.</p>}
         <LoginForm />
         {!env.isProd && !env.databaseUrl && (

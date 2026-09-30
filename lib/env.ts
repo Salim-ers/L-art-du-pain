@@ -23,11 +23,20 @@ export const env = {
   whatsappWebhookUrl: process.env.WHATSAPP_WEBHOOK_URL || null,
 };
 
-export function authSecret(): Uint8Array {
+/**
+ * Clé de signature des sessions admin : AUTH_SECRET si fourni, sinon dérivée de l'URL de la base
+ * (valeur secrète, déjà présente sur Vercel) — aucune variable supplémentaire à créer.
+ */
+export async function authSecret(): Promise<Uint8Array> {
   const s = env.authSecret;
-  if (!s || s.length < 32) {
-    if (env.isProd) throw new Error("AUTH_SECRET manquant ou trop court (32 caractères minimum).");
-    return new TextEncoder().encode("dev-only-secret-do-not-use-in-production-000");
+  if (s && s.length >= 32) return new TextEncoder().encode(s);
+  if (env.databaseUrl) {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("adp-session-v1:" + env.databaseUrl));
+    return new Uint8Array(digest);
   }
-  return new TextEncoder().encode(s);
+  if (env.isProd) throw new Error("Ni AUTH_SECRET ni base de données : connexion admin impossible.");
+  return new TextEncoder().encode("dev-only-secret-do-not-use-in-production-000");
 }
+
+/** La connexion admin est possible (clé de session disponible). */
+export const canSignSessions = () => !env.isProd || !!env.databaseUrl || (!!env.authSecret && env.authSecret.length >= 32);

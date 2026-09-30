@@ -15,13 +15,13 @@ export async function signSession(c: SessionClaims) {
     .setIssuedAt()
     .setExpirationTime(SESSION_HOURS + "h")
     .setAudience("adp-admin")
-    .sign(authSecret());
+    .sign(await authSecret());
 }
 
 export async function verifySession(token: string | undefined): Promise<SessionClaims | null> {
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, authSecret(), { audience: "adp-admin", algorithms: ["HS256"] });
+    const { payload } = await jwtVerify(token, await authSecret(), { audience: "adp-admin", algorithms: ["HS256"] });
     if (typeof payload.sub !== "string") return null;
     return { sub: payload.sub, role: payload.role as Role, v: Number(payload.v ?? 0) };
   } catch {
