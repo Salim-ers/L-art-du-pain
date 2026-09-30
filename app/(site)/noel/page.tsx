@@ -10,7 +10,8 @@ async function christmas() {
   return all.find((c) => c.state === "open") ?? all.find((c) => c.state === "upcoming") ?? all[all.length - 1] ?? null;
 }
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const c = await christmas();

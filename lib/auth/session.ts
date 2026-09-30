@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -25,15 +26,18 @@ export function endSession() {
   cookies().delete(SESSION_COOKIE);
 }
 
-/** Utilisateur courant, relu en base à chaque requête (compte désactivé ou sessions révoquées = déconnecté). */
-export async function currentUser(): Promise<User | null> {
+/**
+ * Utilisateur courant, relu en base à chaque requête (compte désactivé ou sessions révoquées = déconnecté).
+ * Mis en cache le temps d'un rendu : layout et page partagent la même lecture.
+ */
+export const currentUser = cache(async (): Promise<User | null> => {
   const claims = await verifySession(cookies().get(SESSION_COOKIE)?.value);
   if (!claims) return null;
   const db = await getDb();
   const [u] = await db.select().from(s.users).where(eq(s.users.id, claims.sub));
   if (!u || !u.active || u.tokenVersion !== claims.v) return null;
   return u;
-}
+});
 
 /** Pour les pages : redirige vers la connexion, ou vers le tableau de bord si le rôle est insuffisant. */
 export async function requirePage(min: Role = "STAFF"): Promise<User> {

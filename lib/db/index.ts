@@ -51,9 +51,11 @@ async function connectLocal(): Promise<DB> {
   const { drizzle } = await import("drizzle-orm/pglite");
   const { migrate } = await import("drizzle-orm/pglite/migrator");
   const { mkdirSync } = await import("node:fs");
-  const dir = env.ephemeralDb ? "/tmp/adp-pglite" : path.join(process.cwd(), env.localDbDir);
-  mkdirSync(dir, { recursive: true });
-  const db = drizzle(new PGlite(dir), { schema });
+  // Pendant `next build`, plusieurs processus pré-génèrent les pages en parallèle : chacun sa base en mémoire.
+  const building = process.env.NEXT_PHASE === "phase-production-build";
+  const dir = building ? null : env.ephemeralDb ? "/tmp/adp-pglite" : path.join(process.cwd(), env.localDbDir);
+  if (dir) mkdirSync(dir, { recursive: true });
+  const db = drizzle(dir ? new PGlite(dir) : new PGlite(), { schema });
   await migrate(db, { migrationsFolder: MIGRATIONS });
   const { seed, ensureAdmin } = await import("./seed");
   await seed(db as unknown as DB);

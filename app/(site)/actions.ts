@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getDb, schema as s } from "@/lib/db";
 import { createCustomOrder, customDays } from "@/lib/custom";
@@ -88,6 +89,8 @@ export async function submitOrder(input: OrderInput): Promise<Result<{ redirect:
     const parsed = orderInput.safeParse(input);
     if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
     const r = await placeOrder(input);
+    // Stock et places des campagnes ont changé : les pages publiques en cache sont régénérées.
+    revalidatePath("/", "layout");
     return { ok: true, redirect: r.redirect };
   } catch (e) {
     return fail(e, "submitOrder");

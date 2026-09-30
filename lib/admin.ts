@@ -13,18 +13,20 @@ export async function todayStats() {
   const db = await getDb();
   const d = today();
   const { start, end } = parisDayBounds(d);
-  const [created] = await db
-    .select({ n: sql<number>`count(*)::int`, ca: sql<number>`coalesce(sum(${s.orders.totalCents}),0)::int` })
-    .from(s.orders)
-    .where(and(revenueOrder, gte(s.orders.createdAt, start), lt(s.orders.createdAt, end)));
-  const pickups = await db
-    .select({ status: s.orders.status, n: sql<number>`count(*)::int` })
-    .from(s.orders)
-    .where(and(eq(s.orders.pickupDate, d), visibleOrder))
-    .groupBy(s.orders.status);
+  const [[created], pickups, [custom], [msgs]] = await Promise.all([
+    db
+      .select({ n: sql<number>`count(*)::int`, ca: sql<number>`coalesce(sum(${s.orders.totalCents}),0)::int` })
+      .from(s.orders)
+      .where(and(revenueOrder, gte(s.orders.createdAt, start), lt(s.orders.createdAt, end))),
+    db
+      .select({ status: s.orders.status, n: sql<number>`count(*)::int` })
+      .from(s.orders)
+      .where(and(eq(s.orders.pickupDate, d), visibleOrder))
+      .groupBy(s.orders.status),
+    db.select({ n: sql<number>`count(*)::int` }).from(s.customOrders).where(eq(s.customOrders.status, "pending")),
+    db.select({ n: sql<number>`count(*)::int` }).from(s.messages).where(eq(s.messages.read, false)),
+  ]);
   const count = (...st: OrderStatus[]) => pickups.filter((p) => st.includes(p.status)).reduce((t, p) => t + p.n, 0);
-  const [custom] = await db.select({ n: sql<number>`count(*)::int` }).from(s.customOrders).where(eq(s.customOrders.status, "pending"));
-  const [msgs] = await db.select({ n: sql<number>`count(*)::int` }).from(s.messages).where(eq(s.messages.read, false));
   return {
     date: d,
     orders: created.n,

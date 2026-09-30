@@ -9,7 +9,8 @@ import { site } from "@/content/site";
 import { localBusinessJsonLd } from "@/lib/schema";
 import { getReviews } from "@/lib/site-data";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Nous trouver — boulangerie à Nogent-sur-Oise, près de Creil",

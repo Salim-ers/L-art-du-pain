@@ -18,7 +18,8 @@ import { listProducts } from "@/lib/catalog";
 import { localBusinessJsonLd } from "@/lib/schema";
 import { creationCats, featuredCampaign, galleryCarousel, getReviews, quickCards } from "@/lib/site-data";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [cards, cats, featured, campaign, gallery, reviews] = await Promise.all([

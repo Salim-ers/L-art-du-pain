@@ -12,7 +12,8 @@ import { featuredCampaign } from "@/lib/site-data";
 import { pickupWindow } from "@/components/Teasers";
 import { clickCollectFaq } from "@/content/faq";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Commander en ligne — Click & Collect à Nogent-sur-Oise",

@@ -7,7 +7,8 @@ import { pickupWindow } from "@/components/Teasers";
 import { listCampaigns } from "@/lib/catalog";
 import { campaignStateLabel } from "@/lib/events";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Événements et fêtes — Noël, Épiphanie, Pâques à Nogent-sur-Oise",

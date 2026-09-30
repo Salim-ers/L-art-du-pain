@@ -3,7 +3,8 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { PageHero } from "@/components/PageHero";
 import { galleryFilters, getGallery } from "@/lib/site-data";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Galerie — la boutique et les créations",

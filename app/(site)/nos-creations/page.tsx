@@ -8,7 +8,8 @@ import { ProductGrid } from "@/components/shop/ProductCard";
 import { listCategories, listProducts } from "@/lib/catalog";
 import { creationCats } from "@/lib/site-data";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Nos créations — pains, viennoiseries, pâtisseries à Nogent-sur-Oise",

@@ -61,7 +61,8 @@ async function run(fd: FormData, min: Role, fallback: string, fn: (u: User) => P
   try {
     const u = await requireAction(min);
     const msg = await fn(u);
-    revalidatePath("/admin", "layout");
+    // Tout le site : pages de gestion et pages publiques mises en cache (catalogue, stock, campagnes, réglages).
+    revalidatePath("/", "layout");
     target = withMsg(back, "ok", msg || "Enregistré");
   } catch (e) {
     if (isRedirectError(e)) throw e;

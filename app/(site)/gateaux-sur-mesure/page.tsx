@@ -6,7 +6,8 @@ import { customFaq } from "@/content/faq";
 import { customConfig } from "@/lib/custom";
 import { getSetting } from "@/lib/settings";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Gâteau personnalisé et gâteau d’anniversaire à Nogent-sur-Oise",

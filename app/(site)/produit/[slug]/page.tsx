@@ -11,7 +11,10 @@ import { getProduct, listProducts } from "@/lib/catalog";
 import { breadcrumbJsonLd, productJsonLd } from "@/lib/schema";
 import { site } from "@/content/site";
 
-export const dynamic = "force-dynamic";
+// Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
+export const revalidate = 60;
+// Aucune page générée au build : chacune est créée à sa première visite, puis servie depuis le cache.
+export const generateStaticParams = async () => [];
 
 type Props = { params: { slug: string } };
 
