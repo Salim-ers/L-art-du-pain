@@ -9,7 +9,7 @@ Une seule application Next.js :
 - **campagnes saisonnières** (Noël, Épiphanie, Pâques, Ramadan, Aïd…) avec fenêtre de précommande, dates de retrait et quota « Complet » ;
 - **back-office `/admin`** : tableau de bord du jour, commandes, planning de production imprimable, clients (CRM), produits, catégories, stock, commandes personnalisées, événements, promotions, messages, statistiques, galerie, paramètres, équipe et rôles.
 
-Stack : Next.js 14 (App Router) · TypeScript · CSS natif (la direction artistique d’origine) · PostgreSQL / Supabase via Drizzle ORM · Stripe · Resend · Zod.
+Stack : Next.js 14 (App Router) · TypeScript · CSS natif (la direction artistique d’origine) · PostgreSQL (Neon, offre gratuite) via Drizzle ORM · Stripe · Resend · Zod.
 
 ## Démarrer en local (aucun compte externe nécessaire)
 
@@ -27,19 +27,18 @@ Sans Stripe configuré, seul le paiement en boutique est proposé. Sans Resend, 
 
 > ⚠️ **Le catalogue, les prix et les dates de campagne sont des exemples.** Vérifiez-les et remplacez-les depuis `/admin` avant la mise en ligne.
 
-## Mise en production (Vercel + Supabase)
+## Mise en production (Vercel + Neon, gratuit)
 
-1. **Supabase** : créer un projet (région UE). Récupérer la *connection string* (pooler, mode transaction) → `DATABASE_URL`.
-   Storage : créer un bucket **public** `media` et un bucket **privé** `private`.
-2. **Variables** : copier `.env.example` et tout renseigner dans Vercel → *Settings → Environment Variables* (`AUTH_SECRET` : `openssl rand -base64 48`).
-3. **Base** : en local, avec `DATABASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` dans `.env.local` :
-   ```bash
-   npm run db:migrate
-   ```
-   Crée les tables, active le **Row Level Security** sur toutes les tables (aucun accès via les clés publiques Supabase), insère les données initiales et le super administrateur.
-4. **Stripe** : clé secrète → `STRIPE_SECRET_KEY`. Webhook vers `https://<domaine>/api/stripe/webhook` (événements `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded`) → `STRIPE_WEBHOOK_SECRET`. Activer Apple Pay / Google Pay dans *Settings → Payment methods* (et vérifier le domaine pour Apple Pay).
-5. **Resend** : vérifier le domaine d’envoi, `RESEND_API_KEY` et `EMAIL_FROM`.
-6. Déployer sur Vercel, puis mettre le domaine dans `SITE_URL`, `NEXT_PUBLIC_SITE_URL` (canonical, sitemap, Schema.org, liens des emails).
+1. **Base de données** : dans Vercel → le projet → **Storage** → **Create Database** → **Neon** → offre **Free** → région Europe (Frankfurt) → *Connect* au projet.
+   Vercel ajoute seul `DATABASE_URL` et `DATABASE_URL_UNPOOLED`. Offre gratuite Neon : 0,5 Go, sans carte bancaire, largement suffisant (les photos, compressées, sont stockées dans la base).
+2. **Variables** (Vercel → *Settings → Environment Variables*) : `AUTH_SECRET` (32 caractères minimum), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, et plus tard `SITE_URL` / `NEXT_PUBLIC_SITE_URL` avec le nom de domaine.
+3. **Redéployer** (*Deployments* → ⋯ → *Redeploy*). Au premier démarrage, les tables sont créées, le **Row Level Security** activé, les données initiales et le compte super administrateur insérés — aucune commande à lancer.
+4. **Stripe** (facultatif) : `STRIPE_SECRET_KEY` + webhook vers `https://<domaine>/api/stripe/webhook` (événements `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded`) → `STRIPE_WEBHOOK_SECRET`. Sans Stripe : paiement en boutique uniquement.
+5. **Emails** (facultatif) : Resend (offre gratuite 3 000 emails/mois) → `RESEND_API_KEY`, `EMAIL_FROM`.
+
+Sans base connectée, le site reste visible (base temporaire) mais la commande en ligne, les demandes sur mesure et le formulaire de contact sont fermés, et l’administration l’indique en rouge.
+
+`npm run db:migrate` reste disponible pour migrer une base à la main.
 
 Modifier le schéma : éditer `lib/db/schema.ts` puis `npm run db:generate` et `npm run db:migrate`.
 
@@ -50,7 +49,7 @@ Modifier le schéma : éditer `lib/db/schema.ts` puis `npm run db:generate` et `
 - Rôles : **SUPER_ADMIN** (tout, y compris les administrateurs), **ADMIN** (prix, produits, campagnes, promotions, paiements, paramètres, équipe), **STAFF** (commandes, planning, clients, stock, messages). Chaque action serveur revérifie le rôle.
 - Toutes les entrées revalidées avec Zod côté serveur ; prix, stock, créneaux, quotas et promotions **recalculés côté serveur** dans une transaction (verrous sur créneau, stock et campagne).
 - Server Actions (protection d’origine intégrée à Next.js = CSRF), limitation de débit (connexion, commande, contact, sur-mesure), pot de miel anti-robots.
-- Uploads : type vérifié par signature binaire (JPG/PNG/WEBP), 8 Mo max., noms aléatoires ; photos clients dans un stockage **privé**, servies uniquement à l’équipe connectée.
+- Uploads : compressés dans le navigateur (≤ 2000 px, WebP), type vérifié par signature binaire (JPG/PNG/WEBP), 4 Mo max. ; stockés en base, photos clients **privées**, servies uniquement à l’équipe connectée.
 - En-têtes : CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy. Journal d’audit (`audit_logs`) des actions sensibles et des connexions.
 - Webhook Stripe à signature vérifiée ; paiements idempotents ; paiements abandonnés libérés automatiquement (créneau + stock) après 45 min.
 

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { getDb, schema as s } from "@/lib/db";
 import { createCustomOrder, customDays } from "@/lib/custom";
-import { findOrderForCustomer, findPromotion, OrderError, placeOrder, priceCart } from "@/lib/orders";
+import { assertOrderingOpen, findOrderForCustomer, findPromotion, OrderError, placeOrder, priceCart } from "@/lib/orders";
 import { limitOrThrow, logError, RateLimitError } from "@/lib/security";
 import { notifyStaff } from "@/lib/notify";
 import { availableDays, SlotError, type PickupDay } from "@/lib/slots";
@@ -123,6 +123,7 @@ export async function submitCustom(fd: FormData): Promise<Result<{ redirect: str
       acceptTerms: fd.get("acceptTerms") === "on",
     });
     if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
+    assertOrderingOpen();
     const img = await readImage(fd.get("inspiration"));
     const ref = img ? await savePrivateImage(img, "inspiration") : null;
     const r = await createCustomOrder(parsed.data, ref);
@@ -135,6 +136,7 @@ export async function submitCustom(fd: FormData): Promise<Result<{ redirect: str
 export async function submitContact(_: unknown, fd: FormData): Promise<Result | null> {
   try {
     limitOrThrow("contact", 4, 900);
+    assertOrderingOpen();
     const parsed = contactInput.safeParse({
       name: fd.get("name"),
       email: fd.get("email"),

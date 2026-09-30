@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
-const supabaseHost = process.env.SUPABASE_URL ? new URL(process.env.SUPABASE_URL).hostname : null;
 const isDev = process.env.NODE_ENV !== "production";
 
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: https://*.stripe.com${supabaseHost ? " https://" + supabaseHost : ""}`,
+  "img-src 'self' data: blob: https://*.stripe.com",
   "font-src 'self' data:",
   `connect-src 'self' https://api.stripe.com${isDev ? " ws:" : ""}`,
   "frame-src https://www.openstreetmap.org https://js.stripe.com https://hooks.stripe.com",
@@ -20,13 +19,14 @@ const nextConfig = {
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: supabaseHost ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }] : [],
   },
   experimental: {
     // PGlite (base locale) et postgres-js restent des modules Node natifs.
     serverComponentsExternalPackages: ["@electric-sql/pglite", "postgres"],
-    // Photos d'inspiration et images produits (8 Mo max, vérifié côté serveur).
-    serverActions: { bodySizeLimit: "9mb" },
+    // Images compressées côté navigateur ; Vercel plafonne de toute façon une requête à 4,5 Mo.
+    serverActions: { bodySizeLimit: "4.5mb" },
+    // Les migrations SQL sont lues au démarrage : elles doivent être embarquées dans les fonctions Vercel.
+    outputFileTracingIncludes: { "/**": ["./drizzle/**/*"] },
   },
   async headers() {
     return [

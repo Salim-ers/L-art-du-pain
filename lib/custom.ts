@@ -8,7 +8,7 @@ import { addDays, paris } from "@/lib/dates";
 import { env } from "@/lib/env";
 import { money } from "@/lib/format";
 import { mails, notifyStaff, sendEmail } from "@/lib/notify";
-import { nextNumber, OrderError, upsertCustomer } from "@/lib/orders";
+import { assertOrderingOpen, nextNumber, OrderError, upsertCustomer } from "@/lib/orders";
 import { logError, token } from "@/lib/security";
 import { getSetting } from "@/lib/settings";
 import { availableDays } from "@/lib/slots";
@@ -39,6 +39,7 @@ export function estimate(cake: Awaited<ReturnType<typeof getSetting<"cake">>>, t
 }
 
 export async function createCustomOrder(input: z.output<typeof customInput>, inspirationRef: string | null) {
+  assertOrderingOpen();
   const { cake, modes, depositPercent } = await customConfig();
   if (!modes.includes(input.mode)) throw new OrderError("Ce mode de commande n’est pas disponible.");
   if (!cake.occasions.includes(input.occasion)) throw new OrderError("Occasion inconnue.");

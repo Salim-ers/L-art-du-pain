@@ -8,11 +8,12 @@ import { formatDate, formatTime, money } from "@/lib/format";
 import type { CakeSettings } from "@/lib/settings-shared";
 import type { PickupDay } from "@/lib/slots";
 import { SlotPicker } from "./SlotPicker";
+import { resizeImage } from "@/lib/resize-image";
 
 type Props = { cake: CakeSettings; modes: ("quote" | "pay")[]; depositPercent: number; step: number };
 
 const STEPS = ["Occasion", "Personnes", "Gâteau", "Saveurs", "Message", "Inspiration", "Date", "Commentaire", "Coordonnées", "Confirmation"];
-const MAX_MB = 8;
+const MAX_MB = 6;
 
 export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Props) {
   const [i, setI] = useState(0);
@@ -72,9 +73,10 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
     top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const pick = (f: File | undefined) => {
+  const pick = async (raw: File | undefined) => {
     setError(null);
-    if (!f) return;
+    if (!raw) return;
+    const f = await resizeImage(raw);
     if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) return setError("Format accepté : JPG, PNG ou WEBP.");
     if (f.size > MAX_MB * 1024 * 1024) return setError(`Image trop lourde (${MAX_MB} Mo maximum).`);
     setFile(f);

@@ -8,7 +8,7 @@ import { requirePage } from "@/lib/auth/session";
 import { getCampaign } from "@/lib/catalog";
 import { getDb, schema as s } from "@/lib/db";
 import { campaignStateLabel } from "@/lib/events";
-import { ACCEPTED_IMAGES } from "@/lib/storage";
+import { ImageInput } from "@/components/admin/ImageInput";
 import { toParisInput as local } from "@/lib/format";
 import { saveEvent } from "../../../actions";
 
@@ -98,7 +98,7 @@ export default async function EventForm({ params }: { params: { id: string } }) 
           <Card title="Visuel">
             {e?.heroImage && <img src={e.heroImage} alt="" className="apreview" />}
             <input type="hidden" name="heroImage" value={e?.heroImage ?? ""} />
-            <label className="afield"><span>Photo plein écran (sinon ambiance lumineuse par défaut)</span><input type="file" name="imageFile" accept={ACCEPTED_IMAGES} /></label>
+            <label className="afield"><span>Photo plein écran (sinon ambiance lumineuse par défaut)</span><ImageInput name="imageFile" /></label>
           </Card>
           <Card title="Publication">
             <label className="acheck"><input type="checkbox" name="published" defaultChecked={e?.published} /> Publiée sur le site</label>

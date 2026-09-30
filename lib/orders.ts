@@ -5,6 +5,7 @@ import "server-only";
 import { timingSafeEqual } from "node:crypto";
 import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { getDb, schema as s, type Tx } from "@/lib/db";
+import { env } from "@/lib/env";
 import type { Order, OrderStatus, Promotion } from "@/lib/db/schema";
 import { listProducts, type ProductView } from "@/lib/catalog";
 import { campaignState } from "@/lib/events";
@@ -17,6 +18,12 @@ import { createCheckout, stripe } from "@/lib/stripe";
 import { orderInput, type OrderInput } from "@/lib/validation";
 
 export class OrderError extends Error {}
+
+export const ORDERING_CLOSED = "La commande en ligne ouvre très bientôt. En attendant, appelez-nous au 03 65 65 89 09 ou passez en boutique.";
+/** Sans base de données permanente, aucune commande n'est acceptée (elle serait perdue). */
+export function assertOrderingOpen() {
+  if (env.ephemeralDb) throw new OrderError(ORDERING_CLOSED);
+}
 
 /* ---------- Numérotation : 2026-00145 ---------- */
 export async function nextNumber(tx: Tx, prefix = "") {
@@ -115,6 +122,7 @@ export async function priceCart(lines: { productId: string; variantId: string | 
 export type PlaceResult = { redirect: string };
 
 export async function placeOrder(raw: OrderInput): Promise<PlaceResult> {
+  assertOrderingOpen();
   const input = orderInput.parse(raw);
   await releaseExpiredPayments();
   const payments = await getSetting("payments");

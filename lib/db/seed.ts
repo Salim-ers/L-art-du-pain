@@ -293,10 +293,15 @@ export async function seed(db: DB) {
 
     await tx.insert(s.settings).values(Object.entries(defaultSettings).map(([key, value]) => ({ key, value })));
 
-    const email = (process.env.ADMIN_EMAIL || "admin@lartdupain.local").toLowerCase();
-    const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === "production" ? null : "boulangerie-dev");
-    if (password) {
-      await tx.insert(s.users).values({ email, name: "Administrateur", passwordHash: await bcrypt.hash(password, 12), role: "SUPER_ADMIN" });
-    }
   });
+}
+
+/** Premier compte super administrateur (ADMIN_EMAIL / ADMIN_PASSWORD), créé tant qu'aucun compte n'existe. */
+export async function ensureAdmin(db: DB) {
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(s.users);
+  if (n > 0) return;
+  const email = (process.env.ADMIN_EMAIL || "admin@lartdupain.local").toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === "production" ? null : "boulangerie-dev");
+  if (!password) return;
+  await db.insert(s.users).values({ email, name: "Administrateur", passwordHash: await bcrypt.hash(password, 12), role: "SUPER_ADMIN" }).onConflictDoNothing();
 }

@@ -1,10 +1,11 @@
 /**
- * Schéma de la base (PostgreSQL / Supabase). Montants en centimes, TVA en points de base (550 = 5,5 %).
+ * Schéma de la base (PostgreSQL — Neon en production). Montants en centimes, TVA en points de base (550 = 5,5 %).
  * Dates de retrait en "YYYY-MM-DD" + heure "HH:MM", fuseau Europe/Paris.
  */
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  customType,
   date,
   index,
   integer,
@@ -385,6 +386,19 @@ export const messages = pgTable("messages", {
   subject: text("subject"),
   body: text("body").notNull(),
   read: boolean("read").notNull().default(false),
+  createdAt: createdAt(),
+});
+
+/** Images stockées directement en base (aucun service de stockage externe nécessaire). */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
+
+export const files = pgTable("files", {
+  id: id(),
+  mime: text("mime").notNull(),
+  size: integer("size").notNull(),
+  // Public : produits, galerie, campagnes. Privé : photos envoyées par les clients.
+  isPublic: boolean("is_public").notNull().default(true),
+  data: bytea("data").notNull(),
   createdAt: createdAt(),
 });
 

@@ -3,6 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { AutoRefresh, Flash, Sidebar } from "@/components/admin/ui";
 import { hasRole, requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
+import { env } from "@/lib/env";
 import { logout } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +48,9 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         <form action={logout} className="adm-logout">
           <button type="submit">Déconnexion</button>
         </form>
+        {env.ephemeralDb && (
+          <p className="aerr">Mode temporaire : aucune base de données permanente n’est connectée. Rien de ce que vous modifiez ne sera conservé et la commande en ligne est fermée. Connectez Neon (Vercel → Storage) puis redéployez.</p>
+        )}
         <Flash />
         <AutoRefresh unread={notes.n} />
         {children}

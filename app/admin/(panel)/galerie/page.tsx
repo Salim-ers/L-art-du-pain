@@ -4,7 +4,7 @@ import { Card, PageTitle } from "@/components/admin/bits";
 import { Submit } from "@/components/admin/ui";
 import { requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
-import { ACCEPTED_IMAGES } from "@/lib/storage";
+import { ImageInput } from "@/components/admin/ImageInput";
 import { galleryFilters } from "@/lib/site-data";
 import { updateMedia, uploadMedia } from "../../actions";
 
@@ -23,7 +23,7 @@ export default async function GalleryAdmin() {
       <Card title="Ajouter des photos">
         <form action={uploadMedia} className="aform aform--inline">
           <input type="hidden" name="back" value="/admin/galerie" />
-          <label className="afield"><span>Images (JPG, PNG, WEBP — 8 Mo max. chacune)</span><input type="file" name="files" accept={ACCEPTED_IMAGES} multiple required /></label>
+          <label className="afield"><span>Images (JPG, PNG, WEBP — compressées automatiquement, 6 par envoi)</span><ImageInput name="files" multiple required /></label>
           <label className="afield"><span>Catégorie</span><select name="category">{cats.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
           <label className="afield"><span>Format</span><select name="format">{formats.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
           <label className="afield"><span>Texte alternatif</span><input name="alt" placeholder="Description de la photo" /></label>

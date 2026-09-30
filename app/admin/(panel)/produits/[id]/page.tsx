@@ -7,7 +7,7 @@ import { Submit, VariantRows } from "@/components/admin/ui";
 import { requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
 import { ALLERGENS } from "@/lib/labels";
-import { ACCEPTED_IMAGES } from "@/lib/storage";
+import { ImageInput } from "@/components/admin/ImageInput";
 import { saveProduct } from "../../../actions";
 
 export const metadata = { title: "Produit" };
@@ -75,7 +75,7 @@ export default async function ProductForm({ params }: { params: { id: string } }
           <Card title="Photo">
             {p?.image && <img src={p.image} alt="" className="apreview" />}
             <input type="hidden" name="image" value={p?.image ?? ""} />
-            <label className="afield"><span>Nouvelle photo (JPG, PNG, WEBP — 8 Mo max.)</span><input type="file" name="imageFile" accept={ACCEPTED_IMAGES} /></label>
+            <label className="afield"><span>Nouvelle photo (JPG, PNG, WEBP — compressée automatiquement)</span><ImageInput name="imageFile" /></label>
           </Card>
           <Card title="Disponibilité">
             <div className="achecks achecks--col">

@@ -11,7 +11,6 @@ export async function GET(req: Request) {
   const ref = new URL(req.url).searchParams.get("ref") ?? "";
   const file = await openPrivate(ref);
   if (!file) return new NextResponse("Introuvable", { status: 404 });
-  if ("redirect" in file) return NextResponse.redirect(file.redirect);
   return new NextResponse(new Uint8Array(file.body), {
     headers: { "Content-Type": file.mime, "Cache-Control": "private, max-age=300", "X-Content-Type-Options": "nosniff" },
   });

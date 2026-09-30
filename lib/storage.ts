@@ -1,14 +1,14 @@
 import "server-only";
 /**
- * Stockage des images.
- * - Supabase Storage si SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY : bucket public (catalogue, galerie) et bucket privé (photos clients).
- * - Sinon (développement) : public/uploads et .data/private.
+ * Stockage des images directement dans PostgreSQL (table `files`) : aucun service externe à payer ni à configurer.
+ * - Images publiques (produits, galerie, campagnes) : servies par /api/img/<id>, mises en cache par le CDN.
+ * - Images privées (photos d'inspiration des clients) : servies par /api/files, réservé à l'équipe connectée.
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { env } from "@/lib/env";
+import { and, eq } from "drizzle-orm";
+import { getDb, schema as s } from "@/lib/db";
 
-const MAX_BYTES = 8 * 1024 * 1024;
+// Vercel limite le corps d'une requête à 4,5 Mo : les images sont compressées dans le navigateur avant l'envoi.
+const MAX_BYTES = 4 * 1024 * 1024;
 export const ACCEPTED_IMAGES = "image/jpeg,image/png,image/webp";
 
 type Sniffed = { ext: "jpg" | "png" | "webp"; mime: string };
@@ -34,74 +34,40 @@ export async function readImage(file: unknown, maxBytes = MAX_BYTES) {
   return { buf, ...type };
 }
 
-const name = (folder: string, ext: string) =>
-  `${folder.replace(/[^a-z0-9-]/gi, "")}/${new Date().toISOString().slice(0, 7)}/${crypto.randomUUID()}.${ext}`;
+type Img = NonNullable<Awaited<ReturnType<typeof readImage>>>;
 
-const supabase = () => (env.supabaseUrl && env.supabaseServiceKey ? { url: env.supabaseUrl, key: env.supabaseServiceKey } : null);
-
-async function supaUpload(bucket: string, key: string, buf: Uint8Array, mime: string) {
-  const sb = supabase()!;
-  const res = await fetch(`${sb.url}/storage/v1/object/${bucket}/${key}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${sb.key}`, "Content-Type": mime, "x-upsert": "false", "cache-control": "31536000" },
-    body: Buffer.from(buf),
-  });
-  if (!res.ok) throw new UploadError("Envoi de l’image impossible (" + res.status + ").");
+async function store(img: Img, isPublic: boolean) {
+  const db = await getDb();
+  const [row] = await db
+    .insert(s.files)
+    .values({ mime: img.mime, size: img.buf.byteLength, isPublic, data: Buffer.from(img.buf) })
+    .returning({ id: s.files.id });
+  return row.id;
 }
 
 /** Image publique (produit, galerie, campagne) → URL affichable. */
-export async function savePublicImage(img: NonNullable<Awaited<ReturnType<typeof readImage>>>, folder: string) {
-  const key = name(folder, img.ext);
-  if (supabase()) {
-    await supaUpload(env.publicBucket, key, img.buf, img.mime);
-    return `${env.supabaseUrl}/storage/v1/object/public/${env.publicBucket}/${key}`;
-  }
-  if (env.isProd && process.env.VERCEL) throw new UploadError("Stockage non configuré (Supabase Storage requis en production).");
-  const file = path.join(process.cwd(), "public", "uploads", key);
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, img.buf);
-  return "/uploads/" + key;
+export async function savePublicImage(img: Img, _folder: string) {
+  return "/api/img/" + (await store(img, true));
 }
 
-/** Image privée (photo d'inspiration client) → clé interne, lisible uniquement depuis l'admin. */
-export async function savePrivateImage(img: NonNullable<Awaited<ReturnType<typeof readImage>>>, folder: string) {
-  const key = name(folder, img.ext);
-  if (supabase()) {
-    await supaUpload(env.privateBucket, key, img.buf, img.mime);
-    return "sb:" + key;
-  }
-  if (env.isProd && process.env.VERCEL) throw new UploadError("Stockage non configuré (Supabase Storage requis en production).");
-  const file = path.join(process.cwd(), ".data", "private", key);
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, img.buf);
-  return "local:" + key;
+/** Image privée (photo d'inspiration client) → référence interne, lisible uniquement depuis l'admin. */
+export async function savePrivateImage(img: Img, _folder: string) {
+  return "db:" + (await store(img, false));
 }
 
-/** Lecture d'une image privée : URL signée (Supabase) ou contenu local. */
-export async function openPrivate(ref: string): Promise<{ redirect: string } | { body: Buffer; mime: string } | null> {
-  if (ref.startsWith("sb:")) {
-    const sb = supabase();
-    if (!sb) return null;
-    const key = ref.slice(3);
-    const res = await fetch(`${sb.url}/storage/v1/object/sign/${env.privateBucket}/${key}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${sb.key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ expiresIn: 300 }),
-    });
-    if (!res.ok) return null;
-    const { signedURL } = (await res.json()) as { signedURL: string };
-    return { redirect: `${sb.url}/storage/v1${signedURL}` };
-  }
-  if (ref.startsWith("local:")) {
-    const key = ref.slice(6);
-    if (key.includes("..")) return null;
-    try {
-      const body = await readFile(path.join(process.cwd(), ".data", "private", key));
-      const ext = key.split(".").pop();
-      return { body, mime: ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg" };
-    } catch {
-      return null;
-    }
-  }
-  return null;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+export async function readFile(id: string, publicOnly: boolean) {
+  if (!UUID.test(id)) return null;
+  const db = await getDb();
+  const [f] = await db
+    .select()
+    .from(s.files)
+    .where(and(eq(s.files.id, id), publicOnly ? eq(s.files.isPublic, true) : undefined));
+  return f ? { body: f.data, mime: f.mime } : null;
+}
+
+/** Lecture d'une image privée à partir de sa référence. */
+export async function openPrivate(ref: string) {
+  return ref.startsWith("db:") ? readFile(ref.slice(3), false) : null;
 }
