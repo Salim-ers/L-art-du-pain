@@ -84,6 +84,38 @@ export function AutoRefresh({ seconds = 30, unread = 0 }: { seconds?: number; un
   return null;
 }
 
+/**
+ * Précharge entièrement une page de gestion dès que l'on survole, touche ou sélectionne son lien :
+ * au moment du clic, la page est souvent déjà prête. Chaque lien est préchargé au plus une fois par 20 s.
+ */
+export function IntentPrefetch() {
+  const router = useRouter();
+  useEffect(() => {
+    const seen = new Map<string, number>();
+    const onIntent = (e: Event) => {
+      const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || a.target === "_blank" || a.hasAttribute("download") || a.origin !== location.origin) return;
+      const href = a.pathname + a.search;
+      if (!a.pathname.startsWith("/admin") || a.pathname === "/admin/login" || href === location.pathname + location.search) return;
+      const now = Date.now();
+      if (now - (seen.get(href) ?? 0) < 20000) return;
+      seen.set(href, now);
+      // "full" : données comprises (par défaut, une page dynamique n'est préchargée que jusqu'à son écran de chargement).
+      router.prefetch(href, { kind: "full" } as unknown as Parameters<typeof router.prefetch>[1]);
+    };
+    const opts = { passive: true, capture: true };
+    document.addEventListener("pointerover", onIntent, opts);
+    document.addEventListener("touchstart", onIntent, opts);
+    document.addEventListener("focusin", onIntent, opts);
+    return () => {
+      document.removeEventListener("pointerover", onIntent, opts);
+      document.removeEventListener("touchstart", onIntent, opts);
+      document.removeEventListener("focusin", onIntent, opts);
+    };
+  }, [router]);
+  return null;
+}
+
 export function Submit({ children, className = "abtn", confirm, name, value }: { children: ReactNode; className?: string; confirm?: string; name?: string; value?: string }) {
   const { pending } = useFormStatus();
   return (

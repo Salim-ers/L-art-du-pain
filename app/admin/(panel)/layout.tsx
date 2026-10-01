@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { and, eq, sql } from "drizzle-orm";
-import { AutoRefresh, Flash, Sidebar } from "@/components/admin/ui";
+import { AutoRefresh, Flash, IntentPrefetch, Sidebar } from "@/components/admin/ui";
 import { hasRole, requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
 import { env } from "@/lib/env";
@@ -53,6 +53,7 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         )}
         <Flash />
         <AutoRefresh unread={notes.n} />
+        <IntentPrefetch />
         {children}
       </div>
     </div>

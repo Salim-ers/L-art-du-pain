@@ -19,10 +19,42 @@ const MIGRATIONS = path.join(process.cwd(), "drizzle");
 type GlobalDb = { __adpDb?: Promise<DB> };
 const g = globalThis as unknown as GlobalDb;
 
+/** Date de la dernière migration livrée avec le code (drizzle/meta/_journal.json). */
+async function latestMigration(): Promise<number> {
+  const { readFile } = await import("node:fs/promises");
+  const journal = JSON.parse(await readFile(path.join(MIGRATIONS, "meta", "_journal.json"), "utf8")) as { entries: { when: number }[] };
+  return Math.max(0, ...journal.entries.map((e) => e.when));
+}
+
+/** Base déjà à jour : une seule requête, sans connexion directe ni verrou. */
+async function upToDate(db: DB): Promise<boolean> {
+  try {
+    const [expected, rows] = await Promise.all([
+      latestMigration(),
+      db.execute<{ at: string | null }>(sql`select max(created_at)::text as at from drizzle.__drizzle_migrations`),
+    ]);
+    const at = Number(rows[0]?.at ?? 0);
+    return at >= expected;
+  } catch {
+    return false;
+  }
+}
+
 async function connectPostgres(url: string): Promise<DB> {
   const { default: postgres } = await import("postgres");
   const { drizzle } = await import("drizzle-orm/postgres-js");
   const { migrate } = await import("drizzle-orm/postgres-js/migrator");
+
+  // prepare:false : compatible avec les poolers (Neon, PgBouncer).
+  const client = postgres(url, { max: env.dbPoolMax, prepare: false, onnotice: () => {} });
+  const db = drizzle(client, { schema });
+
+  // Cas courant (démarrage à froid d'une fonction) : base déjà migrée, on vérifie juste le compte admin.
+  if (await upToDate(db)) {
+    const { ensureAdmin } = await import("./seed");
+    await ensureAdmin(db);
+    return db;
+  }
 
   // Migrations sur une connexion directe (hors pooler), sérialisées entre instances par un verrou.
   const direct = postgres(env.databaseDirectUrl ?? url, { max: 1, prepare: false, onnotice: () => {} });
@@ -41,9 +73,7 @@ async function connectPostgres(url: string): Promise<DB> {
     await direct.end({ timeout: 5 });
   }
 
-  // prepare:false : compatible avec les poolers (Neon, PgBouncer).
-  const client = postgres(url, { max: env.dbPoolMax, prepare: false, onnotice: () => {} });
-  return drizzle(client, { schema });
+  return db;
 }
 
 async function connectLocal(): Promise<DB> {

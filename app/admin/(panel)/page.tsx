@@ -10,8 +10,8 @@ import { markNotificationsRead } from "../actions";
 export const metadata = { title: "Tableau de bord" };
 
 export default async function Dashboard({ searchParams }: { searchParams: { interdit?: string } }) {
-  await releaseExpiredPayments();
-  const [t, next, notes] = await Promise.all([todayStats(), upcomingPickups(14), unreadNotifications()]);
+  // Le nettoyage des paiements abandonnés part en parallèle : il ne retarde plus l'affichage.
+  const [t, next, notes] = await Promise.all([todayStats(), upcomingPickups(14), unreadNotifications(), releaseExpiredPayments()]);
   const d = today();
   return (
     <>

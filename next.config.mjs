@@ -25,8 +25,9 @@ const nextConfig = {
     serverComponentsExternalPackages: ["@electric-sql/pglite", "postgres"],
     // Images compressées côté navigateur ; Vercel plafonne de toute façon une requête à 4,5 Mo.
     serverActions: { bodySizeLimit: "4.5mb" },
-    // Pages déjà visitées réaffichées instantanément (30 s) ; toute action ou rafraîchissement vide ce cache.
-    staleTimes: { dynamic: 30, static: 180 },
+    // Pages déjà visitées (30 s) ou préchargées au survol (60 s) affichées instantanément ;
+    // toute action ou rafraîchissement vide ce cache.
+    staleTimes: { dynamic: 30, static: 60 },
     // Les migrations SQL sont lues au démarrage : elles doivent être embarquées dans les fonctions Vercel.
     outputFileTracingIncludes: { "/**": ["./drizzle/**/*"] },
   },
