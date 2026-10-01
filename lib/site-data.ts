@@ -1,10 +1,11 @@
-/** Données partagées par les pages publiques (avis, cartes de commande). */
-import { and, eq } from "drizzle-orm";
-import { site } from "@/content/site";
+/** Données partagées par les pages publiques (galerie, avis, cartes de commande). */
+import { and, asc, eq } from "drizzle-orm";
+import { site, type GalleryFormat } from "@/content/site";
 import { getDb, schema as s } from "@/lib/db";
 import { listCampaigns, listCategories, type CampaignView } from "@/lib/catalog";
 import { getSetting } from "@/lib/settings";
 import type { QuickCard } from "@/components/shop/QuickOrder";
+import type { GalleryItem } from "@/components/Gallery";
 
 export const galleryFilters = [
   { id: "tout", label: "Tout" },
@@ -14,6 +15,16 @@ export const galleryFilters = [
   { id: "boutique", label: "Boutique" },
   { id: "evenements", label: "Événements" },
 ];
+
+export async function getGallery() {
+  const db = await getDb();
+  return db.select().from(s.media).where(eq(s.media.inGallery, true)).orderBy(asc(s.media.position), asc(s.media.createdAt));
+}
+
+export async function galleryCarousel(): Promise<GalleryItem[]> {
+  const rows = await getGallery();
+  return rows.slice(0, 10).map((m) => ({ caption: m.caption ?? m.alt, format: m.format as GalleryFormat, image: { src: m.url, alt: m.alt } }));
+}
 
 export async function getReviews() {
   const r = await getSetting("reviews");

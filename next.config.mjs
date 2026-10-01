@@ -37,7 +37,6 @@ const nextConfig = {
       { source: "/la-maison", destination: "/", permanent: true },
       { source: "/savoir-faire", destination: "/", permanent: true },
       { source: "/nos-creations", destination: "/commander", permanent: true },
-      { source: "/galerie", destination: "/", permanent: true },
     ];
   },
   async headers() {

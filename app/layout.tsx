@@ -48,12 +48,17 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Intro only on the first visit of the session (and never with reduced motion).
+const introScript =
+  "try{if(sessionStorage.getItem('adp-intro')||matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.dataset.intro='seen'}}catch(e){}";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={serif.variable + " " + sans.variable} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
         <noscript>
-          <style>{".rv{opacity:1!important;transform:none!important;clip-path:none!important}"}</style>
+          <style>{".rv{opacity:1!important;transform:none!important;clip-path:none!important}.intro{display:none!important}"}</style>
         </noscript>
       </head>
       <body>

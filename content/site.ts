@@ -102,6 +102,7 @@ export const site: SiteContent = {
     { label: "Nos produits", href: "/commander" },
     { label: "Sur mesure", href: "/gateaux-sur-mesure" },
     { label: "Noël", href: "/noel" },
+    { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
 
@@ -112,6 +113,7 @@ export const site: SiteContent = {
     { label: "Gâteaux sur mesure", href: "/gateaux-sur-mesure" },
     { label: "Événements", href: "/evenements" },
     { label: "Noël & Fêtes", href: "/noel" },
+    { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
 
