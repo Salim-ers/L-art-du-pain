@@ -10,13 +10,11 @@ type MediaProps = {
   fit?: "cover" | "contain";
 };
 
-/** Real photo via next/image, or a clearly-labelled placeholder when no asset is provided yet. */
+/** Real photo via next/image, or an empty frame when no matching photo exists yet. */
 export function Media({ src, alt, placeholder, sizes = "100vw", priority, dark, fit = "cover" }: MediaProps) {
   if (!src) {
     return (
-      <div className={"ph" + (dark ? " ph--dark" : "")} role="img" aria-label={placeholder ?? alt}>
-        <span>{placeholder ?? alt}</span>
-      </div>
+      <div className={"ph" + (dark ? " ph--dark" : "")} role="img" aria-label={placeholder ?? alt} />
     );
   }
   return (

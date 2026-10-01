@@ -64,10 +64,6 @@ export function Hero() {
               <Link href="/gateaux-sur-mesure" className="ulink hero-link">
                 <span>Commande personnalisée</span>
               </Link>
-              <a href="#maison" className="ulink hero-link">
-                <span>Découvrir la Maison</span>
-                <span className="arrow" aria-hidden="true">↘</span>
-              </a>
             </div>
           </div>
         </div>

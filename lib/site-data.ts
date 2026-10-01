@@ -1,12 +1,10 @@
-/** Données partagées par les pages publiques (galerie, avis, cartes de commande). */
-import { and, asc, eq } from "drizzle-orm";
-import { site, type GalleryFormat } from "@/content/site";
+/** Données partagées par les pages publiques (avis, cartes de commande). */
+import { and, eq } from "drizzle-orm";
+import { site } from "@/content/site";
 import { getDb, schema as s } from "@/lib/db";
 import { listCampaigns, listCategories, type CampaignView } from "@/lib/catalog";
 import { getSetting } from "@/lib/settings";
 import type { QuickCard } from "@/components/shop/QuickOrder";
-import type { CreationCat } from "@/components/Creations";
-import type { GalleryItem } from "@/components/Gallery";
 
 export const galleryFilters = [
   { id: "tout", label: "Tout" },
@@ -16,16 +14,6 @@ export const galleryFilters = [
   { id: "boutique", label: "Boutique" },
   { id: "evenements", label: "Événements" },
 ];
-
-export async function getGallery() {
-  const db = await getDb();
-  return db.select().from(s.media).where(eq(s.media.inGallery, true)).orderBy(asc(s.media.position), asc(s.media.createdAt));
-}
-
-export async function galleryCarousel(): Promise<GalleryItem[]> {
-  const rows = await getGallery();
-  return rows.slice(0, 10).map((m) => ({ caption: m.caption ?? m.alt, format: m.format as GalleryFormat, image: { src: m.url, alt: m.alt } }));
-}
 
 export async function getReviews() {
   const r = await getSetting("reviews");
@@ -52,18 +40,8 @@ export async function quickCards(): Promise<QuickCard[]> {
     image: campaign?.heroImage ?? fetes?.image ?? null,
     accent: true,
   });
-  cards.push({ href: "/gateaux-sur-mesure", title: "Commande personnalisée", tagline: "Un gâteau à votre image.", image: "/images/entremets-coeur.png" });
+  cards.push({ href: "/gateaux-sur-mesure", title: "Commande personnalisée", tagline: "Un gâteau à votre image.", image: null });
   return cards;
-}
-
-export async function creationCats(): Promise<CreationCat[]> {
-  const cats = await listCategories();
-  return cats.map((c) => ({
-    id: c.slug,
-    title: c.slug === "fetes" ? "Les Fêtes" : "Les " + c.name,
-    image: { src: c.image, alt: c.name },
-    href: c.slug === "fetes" ? "/noel" : "/commander/" + c.slug,
-  }));
 }
 
 export async function activeCategory(slug: string) {

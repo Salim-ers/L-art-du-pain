@@ -32,7 +32,6 @@ export default async function NousTrouverPage() {
         intro={<p>La boutique se trouve à Nogent-sur-Oise, à deux pas de Creil. {site.hours ? site.hours.display + "." : ""} Commandez en ligne pour trouver votre commande prête à votre arrivée.</p>}
       />
       <Location />
-      <LocalSeo reviewUrl={reviews.url} />
       <section id="contact" className="section contact">
         <div className="wrap contact-grid">
           <div className="stack">
@@ -46,6 +45,8 @@ export default async function NousTrouverPage() {
           <ContactForm />
         </div>
       </section>
+      {/* Zone desservie (référencement local), après l’essentiel : adresse et contact. */}
+      <LocalSeo reviewUrl={reviews.url} />
     </main>
   );
 }

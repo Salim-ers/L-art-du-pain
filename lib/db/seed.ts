@@ -35,7 +35,7 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
     image: "/images/pains.png",
     seo: "Pains artisanaux cuits chaque jour à Nogent-sur-Oise : baguette tradition, pain de campagne, pain complet. Réservez en Click & Collect.",
     products: [
-      { name: "Baguette tradition", price: 140, short: "Farine Label Rouge, fermentation lente, croûte fine et craquante.", image: "/images/pains.png", allergens: [G], featured: true },
+      { name: "Baguette tradition", price: 140, short: "Farine Label Rouge, fermentation lente, croûte fine et craquante.", allergens: [G], featured: true },
       { name: "Baguette", price: 120, short: "La baguette du quotidien, dorée à point.", allergens: [G] },
       { name: "Pain complet", price: 260, short: "Farine complète, mie dense et parfumée.", allergens: [G] },
       { name: "Pain aux céréales", price: 290, short: "Graines de lin, tournesol, sésame et millet.", allergens: [G, SE] },
@@ -50,8 +50,8 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
     image: "/images/viennoiseries.png",
     seo: "Viennoiseries pur beurre à Nogent-sur-Oise : croissants, pains au chocolat, pains aux raisins. Commandez et retirez en boutique.",
     products: [
-      { name: "Croissant", price: 130, short: "Pur beurre, feuilletage croustillant.", image: "/images/viennoiseries.png", allergens: [G, L, O], featured: true, stock: 60 },
-      { name: "Pain au chocolat", price: 140, short: "Deux barres de chocolat noir, feuilletage doré.", image: "/images/viennoiseries.png", allergens: [G, L, O, SO], stock: 60 },
+      { name: "Croissant", price: 130, short: "Pur beurre, feuilletage croustillant.", allergens: [G, L, O], featured: true, stock: 60 },
+      { name: "Pain au chocolat", price: 140, short: "Deux barres de chocolat noir, feuilletage doré.", allergens: [G, L, O, SO], stock: 60 },
       { name: "Pain aux raisins", price: 170, short: "Crème pâtissière et raisins moelleux.", allergens: [G, L, O] },
       { name: "Chausson aux pommes", price: 180, short: "Compotée de pommes, feuilletage caramélisé.", allergens: [G, L, O] },
     ],
@@ -69,7 +69,7 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
       { name: "Tarte au citron", price: 380, short: "Sablé breton, crémeux citron, meringue italienne.", allergens: [G, L, O] },
       { name: "Mille-feuille", price: 390, short: "Feuilletage caramélisé, crème vanille.", allergens: [G, L, O] },
       { name: "Paris-Brest", price: 420, short: "Choux croustillant, crème mousseline pralinée.", allergens: [G, L, O, N] },
-      { name: "Entremets individuel", price: 450, short: "Création du moment, selon la saison.", image: "/images/entremets-coeur.png", allergens: [G, L, O] },
+      { name: "Entremets individuel", price: 450, short: "Création du moment, selon la saison.", allergens: [G, L, O] },
     ],
   },
   {
@@ -77,12 +77,12 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
     name: "Gâteaux",
     tagline: "À partager, pour les grandes occasions.",
     description: "Entremets et gâteaux à partager, de 4 à 8 personnes. Pour un gâteau sur mesure, utilisez notre configurateur.",
-    image: "/images/patisseries-collection.png",
+    image: null,
     seo: "Gâteaux d’anniversaire et entremets à partager à Nogent-sur-Oise, de 4 à 8 personnes. Commande en ligne et retrait en boutique.",
     products: [
-      { name: "Entremets chocolat", price: 2400, short: "Mousse chocolat noir, croustillant praliné.", image: "/images/entremets-coeur.png", allergens: [G, L, O, N], variants: [["4 personnes", 4, 1800], ["6 personnes", 6, 2400], ["8 personnes", 8, 3200]], lead: 24 },
+      { name: "Entremets chocolat", price: 2400, short: "Mousse chocolat noir, croustillant praliné.", allergens: [G, L, O, N], variants: [["4 personnes", 4, 1800], ["6 personnes", 6, 2400], ["8 personnes", 8, 3200]], lead: 24 },
       { name: "Fraisier", price: 2600, short: "Génoise, crème mousseline, fraises fraîches (en saison).", allergens: [G, L, O], variants: [["4 personnes", 4, 2000], ["6 personnes", 6, 2600], ["8 personnes", 8, 3400]], lead: 24 },
-      { name: "Tarte aux fruits de saison", price: 2200, short: "Pâte sablée, crème d’amande, fruits frais.", image: "/images/patisseries-collection.png", allergens: [G, L, O, N], variants: [["6 personnes", 6, 2200], ["8 personnes", 8, 2900]], lead: 24 },
+      { name: "Tarte aux fruits de saison", price: 2200, short: "Pâte sablée, crème d’amande, fruits frais.", allergens: [G, L, O, N], variants: [["6 personnes", 6, 2200], ["8 personnes", 8, 2900]], lead: 24 },
     ],
   },
   {
@@ -93,7 +93,7 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
     image: "/images/sale.png",
     seo: "Sandwichs, paninis, quiches et formules déjeuner à Nogent-sur-Oise, préparés sur notre pain maison. Réservez votre déjeuner.",
     products: [
-      { name: "Sandwich jambon-beurre", price: 450, short: "Baguette tradition, jambon supérieur, beurre doux.", image: "/images/sale.png", allergens: [G, L], vat: 1000 },
+      { name: "Sandwich jambon-beurre", price: 450, short: "Baguette tradition, jambon supérieur, beurre doux.", allergens: [G, L], vat: 1000 },
       { name: "Panini", price: 500, short: "Jambon, fromage ou poulet curry.", allergens: [G, L, M], vat: 1000 },
       { name: "Quiche lorraine", price: 380, short: "Pâte brisée maison, lardons, crème.", allergens: [G, L, O], vat: 1000 },
       { name: "Pizza", price: 350, short: "Sur pâte à pain, garniture du jour.", allergens: [G, L], vat: 1000 },
@@ -105,7 +105,7 @@ const catalog: { slug: string; name: string; tagline: string; description: strin
     name: "Gourmandises",
     tagline: "Les petits plaisirs de la Maison.",
     description: "Cookies, brownies, financiers et chocolats, à offrir ou à s’offrir.",
-    image: "/images/entremets-coeur.png",
+    image: null,
     seo: "Gourmandises artisanales à Nogent-sur-Oise : cookies, brownies, financiers et chocolats. À offrir ou à déguster.",
     products: [
       { name: "Cookie", price: 220, short: "Pépites de chocolat, cœur fondant.", allergens: [G, L, O, SO] },
@@ -207,7 +207,8 @@ export async function seed(db: DB) {
             shortDescription: p.short ?? null,
             description: p.description ?? p.short ?? null,
             composition: p.composition ?? null,
-            image: p.image === undefined ? c.image : p.image,
+            // Une photo = un seul sujet : un produit sans photo à lui reste sans photo (jamais celle de sa catégorie).
+            image: p.image ?? null,
             priceCents: p.price,
             vatRate: p.vat ?? 550,
             allergens: p.allergens ?? [],
@@ -277,18 +278,12 @@ export async function seed(db: DB) {
       .returning();
     await tx.insert(s.eventProducts).values({ eventId: epi.id, productId: productIds["galette-des-rois-frangipane"], position: 0 });
 
+    // Galerie : uniquement des photos qui ne sont utilisées nulle part ailleurs sur le site.
     const gallery: [string, string, string, string][] = [
-      ["/images/boutique-interieur.png", "Intérieur de la boutique", "L’intérieur", "boutique"],
-      ["/images/pains.png", "Baguettes dorées", "Les pains", "pains"],
-      ["/images/patisseries-collection.png", "Plateau de pâtisseries", "La collection", "patisseries"],
-      ["/images/viennoiseries.png", "Croissants et pains au chocolat", "Viennoiseries", "viennoiseries"],
-      ["/images/sale.png", "Snacking salé", "Le salé", "boutique"],
-      ["/images/religieuse.png", "Religieuse au chocolat", "La Religieuse", "patisseries"],
-      ["/images/patisseries-vitrine.png", "Vitrine de pâtisseries", "La vitrine", "patisseries"],
-      ["/images/entremets-coeur.png", "Entremets en forme de cœur", "L’entremets cœur", "evenements"],
       ["/images/boutique.png", "La boutique L’Art du Pain", "La boutique", "boutique"],
+      ["/images/patisseries-collection.png", "Plateau de pâtisseries", "La collection", "patisseries"],
     ];
-    const formats = ["wide", "portrait", "wide", "landscape", "medium", "square", "landscape", "portrait", "wide"];
+    const formats = ["wide", "portrait"];
     await tx.insert(s.media).values(gallery.map(([url, alt, caption, category], i) => ({ url, alt, caption, category, format: formats[i], position: i })));
 
     await tx.insert(s.settings).values(Object.entries(defaultSettings).map(([key, value]) => ({ key, value })));

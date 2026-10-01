@@ -25,13 +25,6 @@ export type SiteContent = {
   hero: { image: string | null; imageAlt: string; video: string | null };
   nav: { label: string; href: string }[];
   menu: { label: string; href: string }[];
-  manifesto: { label: string; title: string[]; paragraphs: string[] };
-  editorial: { label: string; title: string[]; text: string; main: Img; detail: Img };
-  creations: { label: string; title: string[]; intro: string };
-  marquee: string[];
-  craft: { label: string; title: [string, string]; intro: string; steps: { title: string; text: string; image: Img }[] };
-  immersive: { image: Img; words: string[] };
-  breath: string[];
   local: { title: string; paragraphs: string[]; towns: { name: string; text: string }[] };
   legal: { publisher: string | null; siret: string | null; host: string };
 };
@@ -106,73 +99,21 @@ export const site: SiteContent = {
 
   // Barre de navigation (bureau)
   nav: [
-    { label: "La Maison", href: "/la-maison" },
-    { label: "Nos créations", href: "/nos-creations" },
+    { label: "Nos produits", href: "/commander" },
     { label: "Sur mesure", href: "/gateaux-sur-mesure" },
     { label: "Noël", href: "/noel" },
-    { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
 
   // Menu complet (plein écran)
   menu: [
     { label: "Accueil", href: "/" },
-    { label: "La Maison", href: "/la-maison" },
-    { label: "Nos créations", href: "/nos-creations" },
     { label: "Commander", href: "/commander" },
     { label: "Gâteaux sur mesure", href: "/gateaux-sur-mesure" },
     { label: "Événements", href: "/evenements" },
     { label: "Noël & Fêtes", href: "/noel" },
-    { label: "Galerie", href: "/galerie" },
-    { label: "Notre savoir-faire", href: "/savoir-faire" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
-
-  manifesto: {
-    label: "01 — La Maison",
-    title: ["Il suffit parfois de farine,", "d’eau, de temps", "et de passion."],
-    paragraphs: [
-      "Ici, rien ne va plus vite que la pâte. Les fournées suivent les heures, la fermentation prend son temps, la croûte se forme lentement. Nous travaillons peu de gestes, mais nous les travaillons bien.",
-      "Une boulangerie de quartier, à Nogent-sur-Oise, où l’exigence n’est pas une posture : c’est simplement la manière de faire. Le pain du matin, la viennoiserie du dimanche, la pâtisserie que l’on rapporte — le quotidien mérite aussi l’exigence.",
-    ],
-  },
-
-  editorial: {
-    label: "La matière",
-    title: ["Doré chaque matin,", "façonné ici."],
-    text: "Une farine, de l’eau, du sel, du levain ou de la levure. Le reste est une affaire de température, d’attention et de répétition.",
-    main: { src: "/images/entremets-coeur.png", alt: "Entremets en forme de cœur, L’Art du Pain" },
-    detail: { src: "/images/patisseries-collection.png", alt: "Plateau de pâtisseries de la Maison" },
-  },
-
-  creations: {
-    label: "02 — Les créations",
-    title: ["Chaque envie", "a son moment."],
-    intro: "Sept familles, une même exigence. Survolez pour entrevoir, cliquez pour commander.",
-  },
-
-  marquee: ["Façonné", "Doré", "Croustillant", "Chaque jour"],
-
-  craft: {
-    label: "03 — Le geste",
-    title: ["Derrière chaque", "création, "],
-    intro:
-      "Pas de raccourci : la pâte est pétrie, façonnée et cuite sur place, au rythme qu’elle impose. Voici les cinq temps qui font un pain, une viennoiserie ou un gâteau de la Maison.",
-    steps: [
-      { title: "Pétrir", text: "Farine, eau, sel, levain : le pétrissage donne sa structure à la pâte.", image: { src: null, alt: "Pétrissage", placeholder: "Photo — mains dans la farine" } },
-      { title: "Façonner", text: "Chaque pâton est façonné à la main, un par un.", image: { src: null, alt: "Façonnage", placeholder: "Photo — façonnage du pâton" } },
-      { title: "Laisser le temps", text: "La fermentation développe les arômes : elle ne se presse pas.", image: { src: null, alt: "Pousse", placeholder: "Photo — pousse en bannetons" } },
-      { title: "Cuire", text: "Four chaud, buée, croûte qui se forme et chante en refroidissant.", image: { src: null, alt: "Cuisson", placeholder: "Photo — enfournement, buée" } },
-      { title: "Partager", text: "Au comptoir, le matin, pour vous.", image: { src: null, alt: "Comptoir", placeholder: "Photo — comptoir, échange" } },
-    ],
-  },
-
-  immersive: {
-    image: { src: null, alt: "Le fournil", placeholder: "Photo plein écran — plan large du fournil" },
-    words: ["La matière.", "Le geste.", "Le temps.", "La précision.", "Le goût."],
-  },
-
-  breath: ["Faire simple.", "Le faire bien.", "Tous les jours."],
 
   local: {
     title: "Boulangerie pâtisserie à Nogent-sur-Oise",

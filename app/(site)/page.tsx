@@ -1,56 +1,44 @@
-import { Intro } from "@/components/Intro";
+import Link from "next/link";
 import { Hero } from "@/components/Hero";
-import { Manifesto } from "@/components/Manifesto";
-import { Editorial } from "@/components/Editorial";
-import { Creations } from "@/components/Creations";
-import { SignatureProduct } from "@/components/SignatureProduct";
-import { Marquee } from "@/components/Marquee";
-import { CraftSection } from "@/components/CraftSection";
-import { Breath } from "@/components/Breath";
-import { Gallery } from "@/components/Gallery";
 import { Reviews } from "@/components/Reviews";
 import { Location } from "@/components/Location";
-import { LocalSeo } from "@/components/LocalSeo";
 import { JsonLd } from "@/components/JsonLd";
 import { QuickOrder } from "@/components/shop/QuickOrder";
+import { ProductGrid } from "@/components/shop/ProductCard";
 import { CampaignTeaser, CustomTeaser } from "@/components/Teasers";
 import { listProducts } from "@/lib/catalog";
 import { localBusinessJsonLd } from "@/lib/schema";
-import { creationCats, featuredCampaign, galleryCarousel, getReviews, quickCards } from "@/lib/site-data";
+import { featuredCampaign, getReviews, quickCards } from "@/lib/site-data";
 
 // Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
 export const revalidate = 60;
 
+/** L'essentiel : commander par rayon, les produits phares avec leurs prix, les rendez-vous du moment, l'adresse. */
 export default async function HomePage() {
-  const [cards, cats, featured, campaign, gallery, reviews] = await Promise.all([
-    quickCards(),
-    creationCats(),
-    listProducts({ featured: true }),
-    featuredCampaign(),
-    galleryCarousel(),
-    getReviews(),
-  ]);
-  const signature = featured.find((p) => p.orderable && p.image) ?? featured[0] ?? null;
+  const [cards, featured, campaign, reviews] = await Promise.all([quickCards(), listProducts({ featured: true }), featuredCampaign(), getReviews()]);
 
   return (
     <>
       <JsonLd data={localBusinessJsonLd({ reviews: reviews.items })} />
-      <Intro />
       <main id="contenu">
         <Hero />
         <QuickOrder cards={cards} />
-        <Manifesto />
-        <Editorial />
+        {featured.length > 0 && (
+          <section className="section shop-group" aria-labelledby="featured">
+            <div className="wrap">
+              <div className="shop-group-head">
+                <h2 className="h-md" id="featured">Les incontournables</h2>
+                <Link href="/commander" className="ulink shop-group-more">
+                  <span>Tous les produits</span>
+                </Link>
+              </div>
+              <ProductGrid products={featured} showCategory />
+            </div>
+          </section>
+        )}
         <CampaignTeaser campaign={campaign} />
-        <Creations cats={cats} />
-        <SignatureProduct product={signature} />
-        <Marquee />
         <CustomTeaser />
-        <CraftSection />
-        <Breath />
-        <Gallery items={gallery} />
         <Reviews items={reviews.items} reviewUrl={reviews.url} />
-        <LocalSeo reviewUrl={reviews.url} />
         <Location />
       </main>
     </>
