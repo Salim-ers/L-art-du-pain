@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getDb, schema as s } from "@/lib/db";
-import { createCustomOrder, customDays } from "@/lib/custom";
+import { createCustomOrder, createSpecialRequest, customDays } from "@/lib/custom";
 import { assertOrderingOpen, findOrderForCustomer, findPromotion, OrderError, placeOrder, priceCart } from "@/lib/orders";
 import { limitOrThrow, logError, RateLimitError } from "@/lib/security";
 import { notifyStaff } from "@/lib/notify";
 import { availableDays, SlotError, type PickupDay } from "@/lib/slots";
 import { readImage, savePrivateImage, UploadError } from "@/lib/storage";
-import { cartLine, contactInput, customInput, firstError, orderInput, type OrderInput } from "@/lib/validation";
+import { cartLine, contactInput, customInput, firstError, orderInput, specialInput, type OrderInput } from "@/lib/validation";
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -133,6 +133,32 @@ export async function submitCustom(fd: FormData): Promise<Result<{ redirect: str
     return { ok: true, redirect: r.redirect };
   } catch (e) {
     return fail(e, "submitCustom");
+  }
+}
+
+/** Commande particulière : demande à étudier par la boutique (photo facultative, privée). */
+export async function submitSpecial(fd: FormData): Promise<Result<{ redirect: string }>> {
+  try {
+    limitOrThrow("special", 5, 900);
+    const parsed = specialInput.safeParse({
+      type: fd.get("type"),
+      desiredDate: fd.get("desiredDate"),
+      quantity: fd.get("quantity"),
+      comment: fd.get("comment"),
+      firstName: fd.get("firstName"),
+      lastName: fd.get("lastName"),
+      email: fd.get("email"),
+      phone: fd.get("phone"),
+      website: fd.get("website") ?? "",
+    });
+    if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
+    assertOrderingOpen();
+    const img = await readImage(fd.get("photo"));
+    const ref = img ? await savePrivateImage(img, "demandes") : null;
+    const r = await createSpecialRequest(parsed.data, ref);
+    return { ok: true, redirect: r.redirect };
+  } catch (e) {
+    return fail(e, "submitSpecial");
   }
 }
 

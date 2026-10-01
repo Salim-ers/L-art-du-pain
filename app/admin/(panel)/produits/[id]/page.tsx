@@ -81,15 +81,17 @@ export default async function ProductForm({ params }: { params: { id: string } }
             <div className="achecks achecks--col">
               <label className="acheck"><input type="checkbox" name="active" defaultChecked={p ? p.active : true} /> Visible sur le site</label>
               <label className="acheck"><input type="checkbox" name="orderable" defaultChecked={p ? p.orderable : true} /> Commande autorisée</label>
-              <label className="acheck"><input type="checkbox" name="clickCollect" defaultChecked={p ? p.clickCollect : true} /> Click & Collect</label>
+              <label className="acheck"><input type="checkbox" name="clickCollect" defaultChecked={p ? p.clickCollect : true} /> Retrait en boutique (commande en ligne)</label>
               <label className="acheck"><input type="checkbox" name="seasonal" defaultChecked={p?.seasonal} /> Produit saisonnier (commandable uniquement pendant sa campagne)</label>
               <label className="acheck"><input type="checkbox" name="featured" defaultChecked={p?.featured} /> Mis en avant (accueil)</label>
             </div>
             <div className="aform aform--grid">
               <label className="afield"><span>Délai de préparation (heures)</span><input type="number" name="leadTimeHours" min={0} max={720} defaultValue={p?.leadTimeHours ?? 0} /></label>
+              <label className="afield"><span>Quantité minimale par commande</span><input type="number" name="minQuantity" min={1} max={50} defaultValue={p?.minQuantity ?? 1} /></label>
               <label className="afield"><span>Ordre d’affichage</span><input type="number" name="position" defaultValue={p?.position ?? 0} /></label>
             </div>
-            <p className="amuted">Le stock se règle dans <Link href="/admin/stock" className="alink">Stock</Link>.</p>
+            <p className="amuted">Le stock se règle dans <Link href="/admin/stock" className="alink">Stock</Link>. La commande en ligne doit aussi être ouverte pour la catégorie.</p>
+            <label className="acheck"><input type="checkbox" name="isDemo" defaultChecked={p?.isDemo ?? false} /> Donnée d’exemple (prix et description non validés) — visible uniquement en mode démonstration</label>
           </Card>
           <div className="asticky-save"><Submit className="abtn abtn--lg">Enregistrer le produit</Submit></div>
         </div>

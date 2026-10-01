@@ -4,6 +4,8 @@ import { AutoRefresh, Flash, IntentPrefetch, Sidebar } from "@/components/admin/
 import { hasRole, requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
 import { env } from "@/lib/env";
+import { getSetting } from "@/lib/settings";
+import Link from "next/link";
 import { logout } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -13,13 +15,14 @@ const roleLabel = { SUPER_ADMIN: "Super administrateur", ADMIN: "Administrateur"
 export default async function PanelLayout({ children }: { children: ReactNode }) {
   const user = await requirePage("STAFF");
   const db = await getDb();
-  const [[custom], [msgs], [notes]] = await Promise.all([
+  const [[custom], [msgs], [notes], catalog] = await Promise.all([
     db.select({ n: sql<number>`count(*)::int` }).from(s.customOrders).where(eq(s.customOrders.status, "pending")),
     db.select({ n: sql<number>`count(*)::int` }).from(s.messages).where(eq(s.messages.read, false)),
     db
       .select({ n: sql<number>`count(*)::int` })
       .from(s.notifications)
       .where(and(eq(s.notifications.audience, "staff"), eq(s.notifications.channel, "dashboard"), sql`${s.notifications.readAt} is null`)),
+    getSetting("catalog"),
   ]);
   const admin = hasRole(user, "ADMIN");
   const items = [
@@ -50,6 +53,12 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         </form>
         {env.ephemeralDb && (
           <p className="aerr">Mode temporaire : aucune base de données permanente n’est connectée. Rien de ce que vous modifiez ne sera conservé et la commande en ligne est fermée. Connectez Neon (Vercel → Storage) puis redéployez.</p>
+        )}
+        {catalog.demo && admin && (
+          <p className="ainfo">
+            Mode démonstration : les produits et campagnes d’exemple sont visibles sur le site (mention « Exemple »).{" "}
+            <Link href="/admin/parametres" className="alink">Le désactiver avant la mise en production</Link>
+          </p>
         )}
         <Flash />
         <AutoRefresh unread={notes.n} />

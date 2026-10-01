@@ -41,6 +41,9 @@ export const cakeSchema = z.object({
   flavors: z.array(z.string().min(1).max(60)).min(1),
   maxFlavors: z.number().int().min(1).max(5),
   minDaysNotice: z.number().int().min(0).max(60),
+  // Afficher une estimation de prix au client. Désactivé tant que les tarifs ne sont pas validés par la boutique :
+  // le client envoie alors une demande, et la boulangerie confirme le tarif définitif.
+  showEstimate: z.boolean().default(false),
 });
 export type CakeSettings = z.infer<typeof cakeSchema>;
 
@@ -64,6 +67,20 @@ export const notifySchema = z.object({
 });
 export type NotifySettings = z.infer<typeof notifySchema>;
 
+/**
+ * DONNÉES RÉELLES / DONNÉES DE DÉMONSTRATION.
+ * Les produits et campagnes marqués `is_demo` (prix, compositions, délais non validés) ne sont visibles
+ * que si `demo` est activé. À désactiver au passage en production : seules les données saisies par la boutique restent.
+ */
+export const catalogSchema = z.object({ demo: z.boolean() });
+export type CatalogSettings = z.infer<typeof catalogSchema>;
+
+/** Arguments de réassurance : n'afficher que des engagements réellement vérifiés par la boutique. */
+export const reassuranceSchema = z.object({
+  items: z.array(z.object({ title: z.string().min(1).max(60), text: z.string().max(200) })).max(6),
+});
+export type ReassuranceSettings = z.infer<typeof reassuranceSchema>;
+
 const everyDay = Array.from({ length: 7 }, () => [{ open: "06:00", close: "21:00" }]);
 
 export const defaultSettings = {
@@ -75,7 +92,7 @@ export const defaultSettings = {
     maxDaysAhead: 21,
     lastPickupBeforeCloseMinutes: 15,
   } satisfies ShopSettings,
-  payments: { card: true, onSite: true, customCakeMode: "both", depositPercent: 30 } satisfies PaymentSettings,
+  payments: { card: true, onSite: true, customCakeMode: "quote", depositPercent: 30 } satisfies PaymentSettings,
   cake: {
     occasions: ["Anniversaire", "Mariage", "Baptême", "Naissance", "Entreprise", "Fête", "Autre"],
     servings: ["4", "6", "8", "10", "12", "15", "20", "30", "50+"],
@@ -88,9 +105,18 @@ export const defaultSettings = {
     flavors: ["Chocolat", "Vanille", "Fruits rouges", "Pistache", "Praliné", "Citron", "Café"],
     maxFlavors: 2,
     minDaysNotice: 3,
+    showEstimate: false,
   } satisfies CakeSettings,
   reviews: { googleReviewUrl: null, items: [] } satisfies ReviewsSettings,
   notify: { staffEmail: null, sendReadyEmail: true, sendConfirmedEmail: true } satisfies NotifySettings,
+  catalog: { demo: true } satisfies CatalogSettings,
+  // Uniquement ce que le site garantit lui-même (retrait programmé, commandes sur demande) : le reste se saisit dans la gestion.
+  reassurance: {
+    items: [
+      { title: "Retrait en boutique", text: "Vous choisissez le jour et l’heure : votre commande vous attend au comptoir." },
+      { title: "Sur commande", text: "Gâteaux personnalisés et grandes quantités, préparés à votre demande." },
+    ],
+  } satisfies ReassuranceSettings,
 };
 
 export type SettingsMap = {
@@ -99,6 +125,8 @@ export type SettingsMap = {
   cake: CakeSettings;
   reviews: ReviewsSettings;
   notify: NotifySettings;
+  catalog: CatalogSettings;
+  reassurance: ReassuranceSettings;
 };
 export type SettingsKey = keyof SettingsMap;
 
@@ -108,4 +136,6 @@ export const settingsSchemas: { [K in SettingsKey]: z.ZodType<SettingsMap[K]> } 
   cake: cakeSchema,
   reviews: reviewsSchema,
   notify: notifySchema,
+  catalog: catalogSchema,
+  reassurance: reassuranceSchema,
 };

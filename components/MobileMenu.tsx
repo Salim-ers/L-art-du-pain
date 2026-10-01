@@ -44,7 +44,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
             href={l.href}
             onClick={onClose}
             tabIndex={tab}
-            className={l.href === "/commander" ? "it terra" : undefined}
+            className={l.href === "/gateaux-sur-mesure" ? "it terra" : undefined}
             style={{ ["--i" as string]: i } as CSSProperties}
           >
             <span>{l.label}</span>
@@ -53,8 +53,8 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
       </nav>
       <div className="menu-foot">
         <div className="menu-actions">
-          <Link href="/commander" onClick={onClose} tabIndex={tab}>Commander</Link>
-          <Link href="/gateaux-sur-mesure" onClick={onClose} tabIndex={tab}>Commande personnalisée</Link>
+          <Link href="/gateaux-sur-mesure" onClick={onClose} tabIndex={tab}>Créer mon gâteau</Link>
+          <Link href="/commandes-speciales" onClick={onClose} tabIndex={tab}>Faire une demande</Link>
         </div>
         <div className="menu-meta">
           <span>{site.address.street} — {site.address.postalCode} {site.address.city}</span>

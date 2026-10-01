@@ -52,6 +52,7 @@
 .tab[aria-current="page"] { color: var(--ivory); }
 .tab[aria-current="page"] svg { stroke: var(--blush); }
 .tab:nth-child(2) { color: var(--ivory); }
+.tabbar a.tab { color: inherit; }
 @media (min-width: 900px) { .tabbar { display: none; } }
 @media (max-width: 899px) { body { padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom)); } .footer { padding-bottom: 24px; } }
 

@@ -46,3 +46,24 @@ export function ReviewsEditor({ initial }: { initial: Review[] }) {
     </div>
   );
 }
+
+type Assurance = { title: string; text: string };
+
+/** Engagements affichés sur l'accueil (réassurance) : uniquement des engagements vérifiés. */
+export function ReassuranceEditor({ initial }: { initial: Assurance[] }) {
+  const [rows, setRows] = useState<Assurance[]>(initial);
+  return (
+    <div className="arepeat">
+      {rows.map((r, i) => (
+        <div key={i} className="arepeat-row">
+          <input name="aTitle" defaultValue={r.title} maxLength={60} placeholder="Retrait en boutique" aria-label="Engagement" />
+          <input name="aText" defaultValue={r.text} maxLength={200} placeholder="Une phrase d’explication" aria-label="Précision" />
+          <button type="button" className="abtn abtn--ghost abtn--sm" onClick={() => setRows(rows.filter((_, j) => j !== i))} aria-label="Retirer">×</button>
+        </div>
+      ))}
+      {rows.length < 6 && (
+        <button type="button" className="abtn abtn--ghost abtn--sm" onClick={() => setRows([...rows, { title: "", text: "" }])}>+ Ajouter un engagement</button>
+      )}
+    </div>
+  );
+}

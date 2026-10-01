@@ -1,5 +1,9 @@
 import "server-only";
-/** Gâteaux sur mesure : demande de devis ou paiement direct d'un acompte, validation par la Maison. */
+/**
+ * Gâteaux sur mesure et commandes particulières : le client envoie une DEMANDE ; la boulangerie l'accepte,
+ * la refuse, demande des précisions ou envoie un devis. Le paiement direct d'un acompte n'est proposé que si
+ * les estimations de prix sont activées (tarifs validés par la boutique).
+ */
 import { timingSafeEqual } from "node:crypto";
 import { and, eq, sql } from "drizzle-orm";
 import { getDb, schema as s } from "@/lib/db";
@@ -13,14 +17,16 @@ import { logError, token } from "@/lib/security";
 import { getSetting } from "@/lib/settings";
 import { availableDays } from "@/lib/slots";
 import { createCheckout, stripe } from "@/lib/stripe";
-import { customInput } from "@/lib/validation";
+import { customInput, specialInput } from "@/lib/validation";
+import { specialRequestTypes } from "@/content/special";
 import type { z } from "zod";
 
 const servingsNumber = (v: string) => parseInt(v, 10) || 1;
 
 export async function customConfig() {
   const [cake, payments] = await Promise.all([getSetting("cake"), getSetting("payments")]);
-  const online = payments.card && !!stripe();
+  // Sans estimation validée, aucun prix ne peut être payé d'avance : uniquement une demande.
+  const online = payments.card && !!stripe() && cake.showEstimate;
   const modes: ("quote" | "pay")[] =
     payments.customCakeMode === "both" ? (online ? ["pay", "quote"] : ["quote"]) : payments.customCakeMode === "pay" && online ? ["pay"] : ["quote"];
   return { cake, modes, depositPercent: payments.depositPercent };
@@ -51,7 +57,7 @@ export async function createCustomOrder(input: z.output<typeof customInput>, ins
   const day = days.find((d) => d.date === input.desiredDate);
   if (!day || !day.slots.some((x) => x.time === input.desiredTime)) throw new OrderError("Cette date n’est pas disponible. Merci d’en choisir une autre.");
 
-  const est = estimate(cake, type.id, input.servings)!;
+  const est = cake.showEstimate ? estimate(cake, type.id, input.servings) : null;
   const db = await getDb();
   const custom = await db.transaction(async (tx) => {
     const customer = await upsertCustomer(tx, input);
@@ -77,6 +83,7 @@ export async function createCustomOrder(input: z.output<typeof customInput>, ins
         phone: input.phone,
         estimateCents: est,
         quoteCents: input.mode === "pay" ? est : null,
+        kind: "cake",
         depositPercent: input.mode === "pay" ? depositPercent : null,
       })
       .returning();
@@ -94,10 +101,47 @@ async function afterCustomReceived(c: CustomOrder) {
   await sendEmail(c.email, "custom.received", mails.customReceived(c), { customOrderId: c.id });
   await notifyStaff(
     "custom.new",
-    `Gâteau sur mesure ${c.number}`,
-    `${c.occasion} — ${c.firstName} ${c.lastName} — ${c.servings} pers. — le ${c.desiredDate}`,
+    `${c.kind === "special" ? "Commande particulière" : "Gâteau sur mesure"} ${c.number}`,
+    `${c.occasion} — ${c.firstName} ${c.lastName} — ${c.servings}${c.kind === "special" ? "" : " pers."} — le ${c.desiredDate}`,
     { customOrderId: c.id }
   );
+}
+
+/** Commande particulière (entreprise, grande quantité, buffet…) : enregistrée comme demande à étudier. */
+export async function createSpecialRequest(input: z.output<typeof specialInput>, photoRef: string | null) {
+  assertOrderingOpen();
+  if (!(specialRequestTypes as readonly string[]).includes(input.type)) throw new OrderError("Type de demande inconnu.");
+  const today = paris().date;
+  if (input.desiredDate <= today || input.desiredDate > addDays(today, 365)) throw new OrderError("Merci de choisir une date à venir (au plus tard dans un an).");
+  const db = await getDb();
+  const c = await db.transaction(async (tx) => {
+    const customer = await upsertCustomer(tx, input);
+    const [row] = await tx
+      .insert(s.customOrders)
+      .values({
+        number: await nextNumber(tx, "CS-"),
+        accessToken: token(),
+        customerId: customer.id,
+        kind: "special",
+        mode: "quote",
+        occasion: input.type,
+        servings: input.quantity,
+        cakeType: "Commande particulière",
+        flavors: [],
+        inspirationImage: photoRef,
+        desiredDate: input.desiredDate,
+        desiredTime: null,
+        comment: input.comment,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        email: input.email,
+        phone: input.phone,
+      })
+      .returning();
+    return row;
+  });
+  await afterCustomReceived(c);
+  return { redirect: `/gateaux-sur-mesure/suivi?n=${encodeURIComponent(c.number)}&t=${c.accessToken}&ok=1` };
 }
 
 export const depositOf = (c: Pick<CustomOrder, "quoteCents" | "depositPercent">) =>
@@ -176,9 +220,9 @@ async function ensureLinkedOrder(c: CustomOrder, paidCents: number) {
       .returning();
     await tx.insert(s.orderItems).values({
       orderId: o.id,
-      categoryName: "Gâteaux sur mesure",
-      name: `Gâteau ${c.cakeType} — ${c.occasion}`,
-      variantLabel: `${c.servings} personnes · ${c.flavors.join(" / ")}`,
+      categoryName: c.kind === "special" ? "Commandes particulières" : "Gâteaux sur mesure",
+      name: c.kind === "special" ? `Commande particulière — ${c.occasion}` : `Gâteau ${c.cakeType} — ${c.occasion}`,
+      variantLabel: c.kind === "special" ? c.servings : `${c.servings} personnes · ${c.flavors.join(" / ")}`,
       unitPriceCents: total,
       quantity: 1,
       vatRate: 550,

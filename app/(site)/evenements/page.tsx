@@ -13,7 +13,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Événements et fêtes — Noël, Épiphanie, Pâques à Nogent-sur-Oise",
   description:
-    "Les rendez-vous gourmands de L’Art du Pain à Nogent-sur-Oise : bûches de Noël, galettes des rois, créations de Pâques, Saint-Valentin et fêtes. Précommande en ligne.",
+    "Les créations de fêtes de L’Art du Pain à Nogent-sur-Oise, à précommander en ligne et à retirer en boutique.",
   alternates: { canonical: "/evenements" },
 };
 
@@ -25,9 +25,9 @@ export default async function EventsPage() {
         crumbs={[{ name: "Événements", path: "/evenements" }]}
         label="Au fil des saisons"
         title={["Les grands", <span key="i" className="it accent">rendez-vous.</span>]}
-        intro={<p>Noël, Épiphanie, Saint-Valentin, Pâques, Ramadan et Aïd, fête des mères et des pères : pour chaque temps fort, la Maison imagine une collection éphémère à précommander.</p>}
+        intro={<p>Quand une collection de fêtes s’ouvre à la précommande, elle apparaît ici, avec ses dates de retrait.</p>}
       >
-        <Link href="/gateaux-sur-mesure" className="btn btn--dark">Un événement privé ? Gâteau sur mesure</Link>
+        <Link href="/commandes-speciales" className="btn btn--dark">Préparer mon événement</Link>
       </PageHero>
       <section className="section events">
         <div className="wrap events-grid">
@@ -42,7 +42,7 @@ export default async function EventsPage() {
               </Link>
             </Reveal>
           ))}
-          {!campaigns.length && <p className="body">Aucune campagne en cours. Revenez bientôt, ou composez votre gâteau sur mesure.</p>}
+          {!campaigns.length && <p className="body">Aucune précommande ouverte pour le moment.</p>}
         </div>
       </section>
     </main>

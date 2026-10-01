@@ -1,6 +1,6 @@
 import { asc } from "drizzle-orm";
 import { Card, PageTitle } from "@/components/admin/bits";
-import { CakeTypesEditor, ReviewsEditor } from "@/components/admin/editors";
+import { CakeTypesEditor, ReassuranceEditor, ReviewsEditor } from "@/components/admin/editors";
 import { Submit } from "@/components/admin/ui";
 import { hasRole, requirePage } from "@/lib/auth/session";
 import { getDb, schema as s } from "@/lib/db";
@@ -12,7 +12,9 @@ import {
   changeOwnPassword,
   createUser,
   saveCakeSettings,
+  saveCatalogSettings,
   saveNotifySettings,
+  saveReassuranceSettings,
   savePaymentSettings,
   saveReviewSettings,
   saveShopSettings,
@@ -29,7 +31,15 @@ const B = "/admin/parametres";
 export default async function SettingsPage() {
   const user = await requirePage("STAFF");
   const admin = hasRole(user, "ADMIN");
-  const [shop, payments, cake, reviews, notify] = await Promise.all([getSetting("shop"), getSetting("payments"), getSetting("cake"), getSetting("reviews"), getSetting("notify")]);
+  const [shop, payments, cake, reviews, notify, catalog, reassurance] = await Promise.all([
+    getSetting("shop"),
+    getSetting("payments"),
+    getSetting("cake"),
+    getSetting("reviews"),
+    getSetting("notify"),
+    getSetting("catalog"),
+    getSetting("reassurance"),
+  ]);
   const db = await getDb();
   const users = admin ? await db.select().from(s.users).orderBy(asc(s.users.createdAt)) : [];
 
@@ -39,6 +49,18 @@ export default async function SettingsPage() {
       <div className="astack">
         {admin && (
           <>
+            <Card title="Données d’exemple">
+              <form action={saveCatalogSettings} className="aform">
+                <input type="hidden" name="back" value={B} />
+                <p className="amuted">
+                  Les produits et campagnes marqués « exemple » (prix, compositions, délais non validés) servent à présenter le site.
+                  Désactivez le mode démonstration au passage en production : seules les données saisies par la boutique resteront visibles.
+                </p>
+                <label className="acheck"><input type="checkbox" name="demo" defaultChecked={catalog.demo} /> Afficher les données d’exemple sur le site (avec la mention « Exemple »)</label>
+                <Submit>Enregistrer</Submit>
+              </form>
+            </Card>
+
             <Card title="Horaires et créneaux de retrait">
               <form action={saveShopSettings} className="aform">
                 <input type="hidden" name="back" value={B} />
@@ -78,7 +100,7 @@ export default async function SettingsPage() {
                 <p className={stripe() ? "amuted" : "aerr"}>
                   Stripe : {stripe() ? "configuré" : "non configuré (STRIPE_SECRET_KEY) — le paiement en ligne est masqué"}{stripe() && !env.stripeWebhookSecret ? " — webhook non configuré (STRIPE_WEBHOOK_SECRET)" : ""}
                 </p>
-                <label className="acheck"><input type="checkbox" name="card" defaultChecked={payments.card} /> Paiement en ligne (CB, Apple Pay, Google Pay)</label>
+                <label className="acheck"><input type="checkbox" name="card" defaultChecked={payments.card} /> Paiement en ligne par carte (Stripe)</label>
                 <label className="acheck"><input type="checkbox" name="onSite" defaultChecked={payments.onSite} /> Paiement sur place au retrait</label>
                 <div className="aform aform--grid">
                   <label className="afield"><span>Gâteaux sur mesure</span>
@@ -110,7 +132,9 @@ export default async function SettingsPage() {
                     <label className="afield"><span>Délai minimum (jours)</span><input type="number" name="minDaysNotice" min={0} max={60} defaultValue={cake.minDaysNotice} /></label>
                   </div>
                 </div>
-                <span className="afield-label">Types de gâteaux (prix estimatif par personne)</span>
+                <label className="acheck"><input type="checkbox" name="showEstimate" defaultChecked={cake.showEstimate} /> Afficher une estimation de prix au client (uniquement si les tarifs ci-dessous sont validés)</label>
+                <p className="amuted">Sans estimation, le client envoie une demande : vous confirmez la faisabilité et le tarif (devis) depuis « Commandes personnalisées ».</p>
+                <span className="afield-label">Styles de gâteaux (prix estimatif par personne)</span>
                 <CakeTypesEditor initial={cake.types.map((t) => ({ ...t, price: (t.pricePerServingCents / 100).toFixed(2).replace(".", ",") }))} />
                 <Submit>Enregistrer les options</Submit>
               </form>
@@ -123,6 +147,15 @@ export default async function SettingsPage() {
                 <p className="amuted">Ne publiez que de vrais avis, recopiés à l’identique depuis Google.</p>
                 <ReviewsEditor initial={reviews.items} />
                 <Submit>Enregistrer les avis</Submit>
+              </form>
+            </Card>
+
+            <Card title="Engagements (réassurance)">
+              <form action={saveReassuranceSettings} className="aform">
+                <input type="hidden" name="back" value={B} />
+                <p className="amuted">Affichés sur l’accueil avant les avis. N’indiquez que des engagements réellement tenus (ex. « Fait sur place » uniquement si c’est le cas).</p>
+                <ReassuranceEditor initial={reassurance.items} />
+                <Submit>Enregistrer les engagements</Submit>
               </form>
             </Card>
 

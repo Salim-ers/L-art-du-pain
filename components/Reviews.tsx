@@ -1,23 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import type { ReviewsSettings } from "@/lib/settings-shared";
+import type { ReassuranceSettings, ReviewsSettings } from "@/lib/settings-shared";
 import { Reveal } from "./Reveal";
 
 /**
- * « Ils parlent de la Maison » — uniquement de vrais avis, saisis dans /admin/parametres.
- * Sans avis, la section reste une invitation sobre à en laisser un.
+ * Réassurance + avis clients. Uniquement des arguments vérifiés et de vrais avis, saisis dans /admin/parametres.
+ * Sans avis, la section reste une invitation sobre à en laisser un : aucun témoignage n'est jamais inventé.
  */
-export function Reviews({ items, reviewUrl }: { items: ReviewsSettings["items"]; reviewUrl: string }) {
+export function Reviews({
+  items,
+  reviewUrl,
+  reassurance = [],
+}: {
+  items: ReviewsSettings["items"];
+  reviewUrl: string;
+  reassurance?: ReassuranceSettings["items"];
+}) {
   const [i, setI] = useState(0);
   const r = items[i];
   const many = items.length > 1;
 
   return (
     <section id="avis" className="section reviews" aria-labelledby="avis-title">
+      {reassurance.length > 0 && (
+        <ul className="assure wrap" aria-label="Nos engagements">
+          {reassurance.map((a, n) => (
+            <Reveal as="li" key={a.title} delay={n * 0.06}>
+              <strong>{a.title}</strong>
+              {a.text && <span>{a.text}</span>}
+            </Reveal>
+          ))}
+        </ul>
+      )}
       <div className="reviews-inner">
         <Reveal as="p" className="label">Avis clients</Reveal>
-        <Reveal as="h2" className="h-md" id="avis-title">Ils parlent de la Maison</Reveal>
+        <Reveal as="h2" className="h-md" id="avis-title">Ce qu’en disent nos clients</Reveal>
         {r ? (
           <blockquote key={i} className="review">
             {r.rating && (
@@ -33,7 +51,7 @@ export function Reviews({ items, reviewUrl }: { items: ReviewsSettings["items"];
             </footer>
           </blockquote>
         ) : (
-          <p className="review-empty">Vous êtes venu·e à la boutique ? Votre avis aide d’autres gourmands à nous trouver.</p>
+          <p className="review-empty">Vous êtes passé·e à la boutique ? Votre avis aide d’autres gourmands à nous trouver.</p>
         )}
         {many && (
           <div className="reviews-nav">

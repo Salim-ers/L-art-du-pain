@@ -3,6 +3,12 @@ import { and, asc, eq, inArray, ne, sql } from "drizzle-orm";
 import { getDb, schema as s } from "@/lib/db";
 import type { Category, Event, Product } from "@/lib/db/schema";
 import { campaignDates, campaignState, type CampaignState } from "@/lib/events";
+import { getSetting } from "@/lib/settings";
+
+/** Les données d'exemple (is_demo) ne sont visibles qu'en mode démonstration (Gestion → Paramètres). */
+export async function demoVisible() {
+  return (await getSetting("catalog")).demo;
+}
 
 export type VariantView = { id: string; label: string; servings: number | null; priceCents: number; stock: number | null };
 export type ProductView = {
@@ -25,6 +31,10 @@ export type ProductView = {
   campaign: { id: string; slug: string; name: string; state: CampaignState; dates: string[] } | null;
   orderable: boolean;
   unavailable: string | null;
+  // Quantité minimale par commande.
+  minQuantity: number;
+  // Donnée d'exemple : affichée avec une mention « Exemple », jamais présentée comme une vraie offre.
+  demo: boolean;
 };
 
 export type CampaignView = Event & { state: CampaignState; dates: string[]; orderCount: number };
@@ -41,10 +51,11 @@ export async function eventOrderCounts(ids?: string[]) {
 
 export async function listCampaigns(opts: { publishedOnly?: boolean } = {}): Promise<CampaignView[]> {
   const db = await getDb();
+  const hideDemo = opts.publishedOnly && !(await demoVisible());
   const rows = await db
     .select()
     .from(s.events)
-    .where(opts.publishedOnly ? eq(s.events.published, true) : undefined)
+    .where(and(opts.publishedOnly ? eq(s.events.published, true) : undefined, hideDemo ? eq(s.events.isDemo, false) : undefined))
     .orderBy(asc(s.events.position), asc(s.events.pickupStart));
   const counts = await eventOrderCounts(rows.map((r) => r.id));
   return rows.map((e) => {
@@ -88,6 +99,7 @@ export async function listProducts(f: Filter = {}): Promise<ProductView[]> {
     productIds = links.map((l) => l.productId);
   }
   if (productIds && !productIds.length) return [];
+  const showDemo = await demoVisible();
 
   const rows = await db
     .select({ p: s.products, c: s.categories })
@@ -96,6 +108,7 @@ export async function listProducts(f: Filter = {}): Promise<ProductView[]> {
     .where(
       and(
         eq(s.products.active, true),
+        showDemo ? undefined : eq(s.products.isDemo, false),
         f.categoryId ? eq(s.products.categoryId, f.categoryId) : undefined,
         productIds ? inArray(s.products.id, productIds) : undefined,
         f.slug ? eq(s.products.slug, f.slug) : undefined,
@@ -145,7 +158,7 @@ function toView(
   const campaign = linked.find((e) => e.state === "open") ?? linked[0] ?? null;
 
   let unavailable: string | null = null;
-  if (!p.orderable || !p.clickCollect || (c && !c.active)) unavailable = "En boutique uniquement";
+  if (!p.orderable || !p.clickCollect || (c && (!c.active || !c.clickCollect))) unavailable = "En boutique";
   else if (p.seasonal && !campaign) unavailable = "Hors saison";
   else if (p.seasonal && campaign && campaign.state !== "open")
     unavailable =
@@ -178,6 +191,8 @@ function toView(
       : null,
     orderable: unavailable === null,
     unavailable,
+    minQuantity: Math.max(1, p.minQuantity),
+    demo: p.isDemo,
   };
 }
 

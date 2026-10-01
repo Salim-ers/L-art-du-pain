@@ -11,14 +11,15 @@ import { itemListJsonLd } from "@/lib/schema";
 import { featuredCampaign } from "@/lib/site-data";
 import { pickupWindow } from "@/components/Teasers";
 import { clickCollectFaq } from "@/content/faq";
+import { DemoNote } from "@/components/shop/CatalogNotes";
 
 // Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Commander en ligne — Click & Collect à Nogent-sur-Oise",
+  title: "Nos créations — commande et précommande à Nogent-sur-Oise",
   description:
-    "Commandez pains, viennoiseries, pâtisseries et salé en ligne chez L’Art du Pain, boulangerie à Nogent-sur-Oise. Choisissez votre créneau, retirez en boutique.",
+    "Pains, viennoiseries, pâtisseries, gâteaux et créations de saison de L’Art du Pain, boulangerie pâtisserie à Nogent-sur-Oise. Gâteaux et fêtes à commander en ligne, retrait en boutique.",
   alternates: { canonical: "/commander" },
 };
 
@@ -33,12 +34,13 @@ export default async function CommanderPage() {
       <JsonLd data={itemListJsonLd("Catalogue L’Art du Pain", products.filter((p) => p.orderable))} />
       <PageHero
         compact
-        crumbs={[{ name: "Commander", path: "/commander" }]}
-        label="Click & Collect — retrait en boutique"
-        title={["Commander", <span key="i" className="it accent">en quelques gestes.</span>]}
-        intro={<p>Composez votre panier, choisissez le jour et l’heure du retrait, réglez en ligne ou en boutique. Nous préparons tout pour votre arrivée, 28 Avenue Saint-Exupéry à Nogent-sur-Oise.</p>}
+        crumbs={[{ name: "Nos créations", path: "/commander" }]}
+        label="Commande et précommande — retrait en boutique"
+        title={["Nos créations"]}
+        intro={<p>Gâteaux et créations de saison se commandent en ligne, pour un retrait au jour et à l’heure choisis. Le reste vous attend en boutique.</p>}
       />
       <CategoryTabs categories={categories} current={null} />
+      <div className="section"><div className="wrap"><DemoNote products={products} /></div></div>
 
       {campaign && campaign.state === "open" && (
         <div className="section">
@@ -55,7 +57,7 @@ export default async function CommanderPage() {
           <div className="wrap">
             <div className="shop-group-head">
               <Reveal as="h2" className="h-md" id={"g-" + c.slug}>{c.name}</Reveal>
-              {c.tagline && <Reveal as="p" className="shop-group-tag">{c.tagline}</Reveal>}
+              {c.tagline && <Reveal as="p" className="shop-group-tag">{c.tagline}{!c.clickCollect && " — en boutique"}</Reveal>}
               <Link href={"/commander/" + c.slug} className="ulink shop-group-more">
                 <span>Voir la sélection</span>
                 <span className="arrow" aria-hidden="true">→</span>
@@ -66,7 +68,7 @@ export default async function CommanderPage() {
         </section>
       ))}
 
-      <Faq title="Click & Collect : comment ça marche ?" items={clickCollectFaq} />
+      <Faq title="Commander en ligne : comment ça marche ?" items={clickCollectFaq} />
     </main>
   );
 }

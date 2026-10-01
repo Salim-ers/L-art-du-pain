@@ -25,6 +25,7 @@ function CategoryForm({ c }: { c?: Category }) {
       <label className="afield"><span>Photo</span><ImageInput name="imageFile" /></label>
       <label className="afield"><span>Ordre</span><input type="number" name="position" defaultValue={c?.position ?? 0} /></label>
       <label className="acheck"><input type="checkbox" name="active" defaultChecked={c ? c.active : true} /> Visible</label>
+      <label className="acheck"><input type="checkbox" name="clickCollect" defaultChecked={c ? c.clickCollect : true} /> Commande en ligne (sinon : présentée, à acheter en boutique)</label>
       <div><Submit>{c ? "Enregistrer" : "Créer la catégorie"}</Submit></div>
     </form>
   );
@@ -39,7 +40,7 @@ export default async function CategoriesPage() {
       <PageTitle title="Catégories" sub="Familles du catalogue, pages /commander/… et cartes de l’accueil." />
       <div className="astack">
         {cats.map((c) => (
-          <Card key={c.id} title={<span className="acat-title">{c.image && <img src={c.image} alt="" />}{c.name}{!c.active && <span className="atag">masquée</span>}</span>}>
+          <Card key={c.id} title={<span className="acat-title">{c.image && <img src={c.image} alt="" />}{c.name}{!c.active && <span className="atag">masquée</span>}{c.active && !c.clickCollect && <span className="atag">en boutique</span>}</span>}>
             <CategoryForm c={c} />
           </Card>
         ))}

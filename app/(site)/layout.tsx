@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import "../shop.css";
 import "../shop-pages.css";
+import "../home.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/components/shop/CartProvider";

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { site } from "@/content/site";
 import { prefersReducedMotion, useScrollFrame } from "@/lib/scroll";
-import { Media } from "./Media";
+import Image from "next/image";
+import { photos } from "@/content/photos";
 
 const v = (i: number) => ({ ["--i" as string]: i } as CSSProperties);
 
@@ -37,7 +38,7 @@ export function Hero() {
         {hero.video ? (
           <video src={hero.video} poster={hero.image ?? undefined} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
         ) : (
-          <Media src={hero.image} alt={hero.imageAlt} placeholder="Vidéo ou photo d’ouverture" priority sizes="100vw" />
+          <Image src={photos.interior.src} alt={photos.interior.alt} fill priority quality={85} sizes="100vw" className="media-img" style={{ objectFit: "cover" }} />
         )}
       </div>
       <div className="hero-veil" aria-hidden="true" />
@@ -45,7 +46,7 @@ export function Hero() {
         <span aria-hidden="true" />
         <div className="hero-main">
           <p className="hero-kicker hero-in" style={v(0)}>
-            Boulangerie • Pâtisserie artisanale — {site.address.city}
+            Boulangerie • Pâtisserie artisanale <span className="hero-city">{site.address.city}</span>
           </p>
           <h1 className="hero-title">
             <span className="line"><span className="w" style={v(0)}>L’ART</span></span>
@@ -54,16 +55,22 @@ export function Hero() {
           <div className="hero-foot">
             <p className="hero-tag hero-in" style={v(2)}>{site.tagline}</p>
             <div className="hero-actions hero-in" style={v(3)}>
-              <Link href="/commander" className="hero-order">
+              <a href="#creations" className="hero-order">
                 <span className="roll">
-                  <span>Commander</span>
-                  <span aria-hidden="true">Commander</span>
+                  <span>Découvrir nos créations</span>
+                  <span aria-hidden="true">Découvrir nos créations</span>
                 </span>
-                <span className="arrow" aria-hidden="true">→</span>
+                <span className="arrow" aria-hidden="true">↓</span>
+              </a>
+              <Link href="/gateaux-sur-mesure" className="hero-order hero-order--ghost">
+                <span className="roll">
+                  <span>Commander un gâteau</span>
+                  <span aria-hidden="true">Commander un gâteau</span>
+                </span>
               </Link>
-              <Link href="/gateaux-sur-mesure" className="ulink hero-link">
-                <span>Commande personnalisée</span>
-              </Link>
+              <a href="#boutique" className="ulink hero-link">
+                <span>Nous trouver</span>
+              </a>
             </div>
           </div>
         </div>

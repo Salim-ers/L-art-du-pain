@@ -44,13 +44,17 @@ export default async function CustomPage({ params }: { params: { id: string } })
       </PageTitle>
       <div className="agrid">
         <div className="astack agrid-wide">
-          <Card title="La demande">
+          <Card title={c.kind === "special" ? "Commande particulière" : "Gâteau sur mesure"}>
             <dl className="adl">
-              <div><dt>Occasion</dt><dd>{c.occasion}</dd></div>
-              <div><dt>Personnes</dt><dd>{c.servings}</dd></div>
-              <div><dt>Gâteau</dt><dd>{c.cakeType}</dd></div>
-              <div><dt>Saveurs</dt><dd>{c.flavors.join(" / ")}</dd></div>
-              <div><dt>Message</dt><dd>{c.message ? `« ${c.message} »` : "—"}</dd></div>
+              <div><dt>{c.kind === "special" ? "Type" : "Occasion"}</dt><dd>{c.occasion}</dd></div>
+              <div><dt>{c.kind === "special" ? "Quantité" : "Personnes"}</dt><dd>{c.servings}</dd></div>
+              {c.kind !== "special" && (
+                <>
+                  <div><dt>Gâteau</dt><dd>{c.cakeType}</dd></div>
+                  <div><dt>Saveurs</dt><dd>{c.flavors.join(" / ")}</dd></div>
+                  <div><dt>Message</dt><dd>{c.message ? `« ${c.message} »` : "—"}</dd></div>
+                </>
+              )}
               <div><dt>Date</dt><dd className="strong">{formatDate(c.desiredDate)}{c.desiredTime && " à " + formatTime(c.desiredTime)}</dd></div>
               <div><dt>Commentaire</dt><dd>{c.comment ?? "—"}</dd></div>
               <div><dt>Mode</dt><dd>{c.mode === "pay" ? "Payer maintenant" : "Demande de devis"}</dd></div>
@@ -60,7 +64,7 @@ export default async function CustomPage({ params }: { params: { id: string } })
             </dl>
           </Card>
           {c.inspirationImage && (
-            <Card title="Photo d’inspiration">
+            <Card title={c.kind === "special" ? "Photo jointe" : "Photo d’inspiration"}>
               <a href={"/api/files?ref=" + encodeURIComponent(c.inspirationImage)} target="_blank" rel="noopener">
                 <img src={"/api/files?ref=" + encodeURIComponent(c.inspirationImage)} alt="Photo d’inspiration envoyée par le client" className="apreview apreview--lg" />
               </a>

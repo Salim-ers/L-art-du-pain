@@ -12,7 +12,8 @@ export function AddToCart({ product: p, compact, tone = "light" }: Props) {
   const cart = useCart();
   const firstAvailable = p.variants.find((v) => v.stock !== 0) ?? p.variants[0];
   const [variantId, setVariantId] = useState<string | null>(firstAvailable?.id ?? null);
-  const [qty, setQty] = useState(1);
+  const min = Math.min(50, p.minQuantity);
+  const [qty, setQty] = useState(min);
   const [done, setDone] = useState(false);
 
   const variant = p.variants.find((v) => v.id === variantId) ?? null;
@@ -53,10 +54,11 @@ export function AddToCart({ product: p, compact, tone = "light" }: Props) {
       )}
 
       {stock !== null && stock > 0 && stock <= 5 && <p className="atc-stock">Plus que {stock} disponible{stock > 1 ? "s" : ""}</p>}
+      {min > 1 && <p className="atc-stock">À partir de {min} pièces</p>}
 
       <div className="atc-row">
         <div className="qty" aria-label="Quantité">
-          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1 || disabled} aria-label="Retirer une unité">−</button>
+          <button type="button" onClick={() => setQty((q) => Math.max(min, q - 1))} disabled={qty <= min || disabled} aria-label="Retirer une unité">−</button>
           <output aria-live="polite">{qty}</output>
           <button type="button" onClick={() => setQty((q) => Math.min(max, q + 1))} disabled={qty >= max || disabled} aria-label="Ajouter une unité">+</button>
         </div>
@@ -89,7 +91,7 @@ export function QuickAdd({ product: p }: { product: ProductView }) {
       data-done={done ? "" : undefined}
       aria-label={"Ajouter " + p.name + " au panier"}
       onClick={() => {
-        cart.add({ productId: p.id, variantId: null, quantity: 1, name: p.name, variantLabel: null, unitCents: p.priceCents, image: p.image, slug: p.slug });
+        cart.add({ productId: p.id, variantId: null, quantity: Math.min(50, p.minQuantity), name: p.name, variantLabel: null, unitCents: p.priceCents, image: p.image, slug: p.slug });
         setDone(true);
         window.setTimeout(() => setDone(false), 1400);
       }}

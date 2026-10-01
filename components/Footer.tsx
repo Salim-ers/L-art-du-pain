@@ -8,10 +8,13 @@ export function Footer() {
     <footer className="footer">
       <div className="wrap footer-inner">
         <div className="footer-cta">
-          <p className="footer-cta-title">Commandez en ligne,<br /><span className="it terra">retirez en boutique.</span></p>
+          <div className="footer-cta-copy">
+            <p className="footer-cta-title">Une commande<br /><span className="it terra">particulière ?</span></p>
+            <p className="footer-cta-text">Petit-déjeuner de réunion, plateaux de viennoiseries, buffet, desserts pour une fête, école ou association.</p>
+          </div>
           <div className="footer-cta-actions">
-            <Link href="/commander" className="btn btn--light-solid">Commander</Link>
-            <Link href="/gateaux-sur-mesure" className="btn btn--light">Commande personnalisée</Link>
+            <Link href="/commandes-speciales" className="btn btn--light-solid">Préparer mon événement</Link>
+            {phone && <a href={"tel:" + phone.tel} className="btn btn--light">{phone.display}</a>}
           </div>
         </div>
         <div className="footer-cols">
@@ -25,7 +28,7 @@ export function Footer() {
             <a href={links.waze} target="_blank" rel="noopener noreferrer">Venir avec Waze ↗</a>
           </div>
           <nav className="footer-col" aria-label="Navigation pied de page">
-            <span className="footer-h">La Maison</span>
+            <span className="footer-h">Le site</span>
             {site.menu.slice(1).map((l) => (
               <Link key={l.href} href={l.href}>{l.label}</Link>
             ))}

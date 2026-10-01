@@ -72,10 +72,10 @@ export function Header() {
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8Z" /><path d="M9 10V6.5a3 3 0 0 1 6 0V10" /></svg>
             {cart.ready && cart.count > 0 && <span className="hdr-count">{cart.count}</span>}
           </Link>
-          <Link href="/commander" className="hdr-cta">
+          <Link href="/gateaux-sur-mesure" className="hdr-cta">
             <span className="roll">
-              <span>Commander</span>
-              <span aria-hidden="true">Commander</span>
+              <span>Créer mon gâteau</span>
+              <span aria-hidden="true">Créer mon gâteau</span>
             </span>
           </Link>
           <button

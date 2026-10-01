@@ -19,7 +19,7 @@ export default function Cgv() {
       <h2>Prix</h2>
       <p>Les prix sont indiqués en euros toutes taxes comprises. Les prix appliqués sont ceux affichés au moment de la validation de la commande.</p>
       <h2>Paiement</h2>
-      <p>Le paiement en ligne est opéré par Stripe (carte bancaire, Apple Pay, Google Pay). Pour les gâteaux personnalisés, un acompte peut être demandé ; le solde est réglé au retrait.</p>
+      <p>Le paiement en ligne est opéré par Stripe. Pour les gâteaux personnalisés, un acompte peut être demandé ; le solde est réglé au retrait.</p>
       <h2>Retrait</h2>
       <p>Les commandes sont à retirer en boutique au créneau choisi. Une commande non retirée le jour prévu ne peut être conservée au-delà de la fermeture, s’agissant de denrées périssables.</p>
       <h2>Rétractation</h2>

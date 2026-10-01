@@ -96,7 +96,9 @@ export async function priceCart(lines: { productId: string; variantId: string | 
   for (const l of lines) {
     const p = products.find((x) => x.id === l.productId);
     if (!p) throw new OrderError("Un produit de votre panier n’est plus proposé. Merci de mettre à jour votre panier.");
-    if (!p.orderable) throw new OrderError(`« ${p.name} » : ${p.unavailable?.toLowerCase()}.`);
+    if (!p.orderable)
+      throw new OrderError(p.unavailable === "En boutique" ? `« ${p.name} » ne se commande pas en ligne : il est disponible en boutique.` : `« ${p.name} » : ${p.unavailable?.toLowerCase()}.`);
+    if (l.quantity < p.minQuantity) throw new OrderError(`« ${p.name} » se commande à partir de ${p.minQuantity} pièces.`);
     let unit = p.priceCents;
     let label: string | null = null;
     if (p.variants.length) {

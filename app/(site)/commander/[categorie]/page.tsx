@@ -7,6 +7,7 @@ import { ProductGrid } from "@/components/shop/ProductCard";
 import { JsonLd } from "@/components/JsonLd";
 import { getCategory, listCategories, listProducts } from "@/lib/catalog";
 import { itemListJsonLd } from "@/lib/schema";
+import { DemoNote, StoreNote } from "@/components/shop/CatalogNotes";
 
 // Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
 export const revalidate = 60;
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await getCategory(params.categorie);
   if (!c) return {};
   return {
-    title: c.seoTitle ?? `${c.name} artisanales à Nogent-sur-Oise — commande en ligne`,
+    title: c.seoTitle ?? `${c.name} — L’Art du Pain, Nogent-sur-Oise`,
     description: c.seoDescription ?? c.description ?? undefined,
     alternates: { canonical: "/commander/" + c.slug },
     openGraph: c.image ? { images: [{ url: c.image, alt: c.name }] } : undefined,
@@ -36,18 +37,20 @@ export default async function CategoryPage({ params }: Props) {
       <JsonLd data={itemListJsonLd(c.name, products)} />
       <PageHero
         compact
-        crumbs={[{ name: "Commander", path: "/commander" }, { name: c.name, path: "/commander/" + c.slug }]}
-        label="Click & Collect — Nogent-sur-Oise"
+        crumbs={[{ name: "Nos créations", path: "/commander" }, { name: c.name, path: "/commander/" + c.slug }]}
+        label={c.clickCollect ? "Commande en ligne — retrait en boutique" : "En boutique — Nogent-sur-Oise"}
         title={[c.name, ...(c.tagline ? [<span key="t" className="it accent">{c.tagline}</span>] : [])]}
         intro={c.description ? <p>{c.description}</p> : undefined}
       />
       <CategoryTabs categories={categories} current={c.slug} />
       <section className="section shop-group">
         <div className="wrap">
+          {!c.clickCollect && <StoreNote />}
+          <DemoNote products={products} />
           {products.length ? (
             <ProductGrid products={products} />
           ) : (
-            <p className="empty">Cette sélection revient très vite. <Link href="/commander" className="ulink"><span>Voir tout le catalogue</span></Link></p>
+            <p className="empty">La carte de cette famille sera bientôt en ligne. <Link href="/commander" className="ulink"><span>Voir nos créations</span></Link></p>
           )}
         </div>
       </section>

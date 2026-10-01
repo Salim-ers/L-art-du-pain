@@ -128,7 +128,7 @@ export function itemListJsonLd(name: string, products: ProductView[]) {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name,
-    itemListElement: products.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: site.url + "/produit/" + p.slug, name: p.name })),
+    itemListElement: products.filter((p) => !p.demo).map((p, i) => ({ "@type": "ListItem", position: i + 1, url: site.url + "/produit/" + p.slug, name: p.name })),
   };
 }
 

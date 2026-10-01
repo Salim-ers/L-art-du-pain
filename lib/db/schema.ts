@@ -93,6 +93,8 @@ export const categories = pgTable("categories", {
   image: text("image"),
   position: integer("position").notNull().default(0),
   active: boolean("active").notNull().default(true),
+  // Commande en ligne pour toute la famille (ex. pains, viennoiseries : désactivée tant que la boutique ne la propose pas).
+  clickCollect: boolean("click_collect").notNull().default(true),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
   createdAt: createdAt(),
@@ -119,6 +121,10 @@ export const products = pgTable(
     featured: boolean("featured").notNull().default(false),
     // Délai minimum de préparation avant retrait.
     leadTimeHours: integer("lead_time_hours").notNull().default(0),
+    // Quantité minimale par commande (ex. plateaux, grandes quantités).
+    minQuantity: integer("min_quantity").notNull().default(1),
+    // Donnée d'exemple (produit, prix, description non validés par la boutique) : masquée hors mode démonstration.
+    isDemo: boolean("is_demo").notNull().default(false),
     position: integer("position").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -175,6 +181,8 @@ export const events = pgTable("events", {
   // Liste explicite de dates de retrait autorisées (sinon toute la plage pickupStart → pickupEnd).
   pickupDates: jsonb("pickup_dates").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
   maxOrders: integer("max_orders"),
+  // Campagne d'exemple : masquée hors mode démonstration.
+  isDemo: boolean("is_demo").notNull().default(false),
   position: integer("position").notNull().default(0),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
@@ -280,6 +288,8 @@ export const customOrders = pgTable(
     // Commande Click & Collect créée lorsque le gâteau est payé / accepté.
     orderId: uuid("order_id").references(() => orders.id, { onDelete: "set null" }),
     status: customStatusEnum("status").notNull().default("pending"),
+    // cake = gâteau sur mesure (configurateur) ; special = commande particulière (entreprise, grande quantité, buffet…).
+    kind: text("kind").$type<"cake" | "special">().notNull().default("cake"),
     mode: text("mode").$type<"quote" | "pay">().notNull(),
     occasion: text("occasion").notNull(),
     servings: text("servings").notNull(),

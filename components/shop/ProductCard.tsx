@@ -10,10 +10,14 @@ export function ProductCard({ product: p, index = 0, showCategory }: { product: 
     <Reveal as="article" className="pcard" delay={(index % 4) * 0.06}>
       <Link href={"/produit/" + p.slug} className="pcard-media" tabIndex={-1} aria-hidden="true">
         <ProductImage src={p.image} alt={p.name} sizes="(min-width: 1100px) 24vw, (min-width: 700px) 33vw, 50vw" />
-        {(p.unavailable || p.seasonal) && (
-          <span className="pcard-badge" data-off={p.unavailable ? "" : undefined}>
-            {p.unavailable ?? "Édition de saison"}
-          </span>
+        {p.demo ? (
+          <span className="pcard-badge" data-demo="">Exemple</span>
+        ) : (
+          (p.unavailable || p.seasonal) && (
+            <span className="pcard-badge" data-off={p.unavailable ? "" : undefined}>
+              {p.unavailable ?? "Édition de saison"}
+            </span>
+          )
         )}
       </Link>
       <div className="pcard-body">

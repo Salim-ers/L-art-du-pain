@@ -6,7 +6,7 @@ export const orderStatusLabel: Record<OrderStatus, string> = {
   to_prepare: "À préparer",
   in_preparation: "En préparation",
   ready: "Prête",
-  collected: "Retirée",
+  collected: "Récupérée",
   cancelled: "Annulée",
 };
 
@@ -36,7 +36,7 @@ export const customerSteps: { key: OrderStatus[]; label: string }[] = [
   { key: ["confirmed", "to_prepare"], label: "Confirmée" },
   { key: ["in_preparation"], label: "En préparation" },
   { key: ["ready"], label: "Prête" },
-  { key: ["collected"], label: "Retirée" },
+  { key: ["collected"], label: "Récupérée" },
 ];
 
 export const ALLERGENS = [

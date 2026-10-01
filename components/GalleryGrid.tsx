@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-type Item = { id: string; url: string; alt: string; caption: string | null; category: string; format: string };
+export type GalleryItem = { id: string; url: string; alt: string; caption: string | null; category: string; format: string };
 
-/** Galerie éditoriale en colonnes, filtrable, avec visionneuse plein écran. */
-export function GalleryGrid({ items, filters }: { items: Item[]; filters: { id: string; label: string }[] }) {
+/** Galerie éditoriale (formats mêlés : portrait, paysage, grand format), filtrable, avec visionneuse plein écran. */
+export function GalleryGrid({ items, filters = [] }: { items: GalleryItem[]; filters?: { id: string; label: string }[] }) {
   const [filter, setFilter] = useState("tout");
   const [box, setBox] = useState<number | null>(null);
   const shown = filter === "tout" ? items : items.filter((i) => i.category === filter);
@@ -31,13 +31,15 @@ export function GalleryGrid({ items, filters }: { items: Item[]; filters: { id: 
 
   return (
     <>
-      <div className="gfilters" role="tablist" aria-label="Filtrer la galerie">
-        {filters.map((f) => (
-          <button key={f.id} type="button" role="tab" aria-selected={filter === f.id} className="ctab" onClick={() => setFilter(f.id)}>
-            {f.label}
-          </button>
-        ))}
-      </div>
+      {filters.length > 0 && (
+        <div className="gfilters" role="tablist" aria-label="Filtrer la galerie">
+          {filters.map((f) => (
+            <button key={f.id} type="button" role="tab" aria-selected={filter === f.id} className="ctab" onClick={() => setFilter(f.id)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="masonry" key={filter}>
         {shown.map((it, i) => (
           <figure key={it.id} className={"mcell mcell--" + it.format} style={{ ["--i" as string]: i % 12 }}>

@@ -22,7 +22,7 @@ export function Location() {
     <section id="boutique" className="section location">
       <div className="wrap location-grid">
         <div className="location-text">
-          <SectionLabel>La boutique</SectionLabel>
+          <SectionLabel>Nous trouver</SectionLabel>
           <h2 className="h-xl"><Line>Venez nous voir.</Line></h2>
           <Reveal as="address" className="location-address">
             <strong>{site.name}</strong>
@@ -46,7 +46,7 @@ export function Location() {
             {social.instagram && (
               <div>
                 <dt>Instagram</dt>
-                <dd><a className="fact-link" href={social.instagram} target="_blank" rel="noopener noreferrer">Suivre la Maison ↗</a></dd>
+                <dd><a className="fact-link" href={social.instagram} target="_blank" rel="noopener noreferrer">Suivre sur Instagram ↗</a></dd>
               </div>
             )}
           </dl>

@@ -18,7 +18,7 @@ import { mails, sendEmail, sendMessage } from "@/lib/notify";
 import { OrderError, setOrderStatus } from "@/lib/orders";
 import { audit, clientIp, limitOrThrow, logError, rateLimit, RateLimitError } from "@/lib/security";
 import { saveSetting } from "@/lib/settings";
-import { cakeSchema, notifySchema, paymentSchema, reviewsSchema, shopSchema } from "@/lib/settings-shared";
+import { cakeSchema, catalogSchema, notifySchema, paymentSchema, reassuranceSchema, reviewsSchema, shopSchema } from "@/lib/settings-shared";
 import { readImage, savePublicImage, UploadError } from "@/lib/storage";
 import { email as emailSchema, firstError, text } from "@/lib/validation";
 
@@ -249,6 +249,9 @@ export async function saveProduct(fd: FormData) {
       seasonal: bool(fd, "seasonal"),
       featured: bool(fd, "featured"),
       leadTimeHours: z.number().int().min(0).max(720).parse(int(fd, "leadTimeHours") ?? 0),
+      minQuantity: z.number().int().min(1, "Quantité minimale : 1 au moins").max(50, "Quantité minimale : 50 au plus").parse(int(fd, "minQuantity") ?? 1),
+      // Une fiche enregistrée par la boutique devient une vraie donnée, sauf si elle reste explicitement marquée « exemple ».
+      isDemo: bool(fd, "isDemo"),
       position: int(fd, "position") ?? 0,
       updatedAt: new Date(),
     };
@@ -310,6 +313,7 @@ export async function saveCategory(fd: FormData) {
       image: img ? await savePublicImage(img, "categories") : opt(fd, "image"),
       position: int(fd, "position") ?? 0,
       active: bool(fd, "active"),
+      clickCollect: bool(fd, "clickCollect"),
     };
     if (id) await db.update(s.categories).set(values).where(eq(s.categories.id, uuid.parse(id)));
     else await db.insert(s.categories).values(values);
@@ -571,6 +575,7 @@ export async function saveCakeSettings(fd: FormData) {
       types,
       maxFlavors: int(fd, "maxFlavors"),
       minDaysNotice: int(fd, "minDaysNotice"),
+      showEstimate: bool(fd, "showEstimate"),
     });
     await saveSetting("cake", v);
     await audit(u.id, "settings.cake", "settings", "cake");
@@ -590,6 +595,28 @@ export async function saveReviewSettings(fd: FormData) {
     await saveSetting("reviews", v);
     await audit(u.id, "settings.reviews", "settings", "reviews");
     return "Avis enregistrés";
+  });
+}
+
+/** Mode démonstration : affiche ou masque partout les produits et campagnes d'exemple. */
+export async function saveCatalogSettings(fd: FormData) {
+  await run(fd, "ADMIN", "/admin/parametres", async (u) => {
+    const v = catalogSchema.parse({ demo: bool(fd, "demo") });
+    await saveSetting("catalog", v);
+    await audit(u.id, "settings.catalog", "settings", "catalog", v);
+    return v.demo ? "Mode démonstration activé" : "Mode démonstration désactivé : seules les vraies données sont visibles";
+  });
+}
+
+export async function saveReassuranceSettings(fd: FormData) {
+  await run(fd, "ADMIN", "/admin/parametres", async (u) => {
+    const titles = fd.getAll("aTitle").map(String);
+    const texts = fd.getAll("aText").map(String);
+    const items = titles.map((t, i) => ({ title: t.trim(), text: (texts[i] ?? "").trim() })).filter((a) => a.title);
+    const v = reassuranceSchema.parse({ items });
+    await saveSetting("reassurance", v);
+    await audit(u.id, "settings.reassurance", "settings", "reassurance");
+    return "Engagements enregistrés";
   });
 }
 

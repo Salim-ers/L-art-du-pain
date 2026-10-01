@@ -23,12 +23,12 @@ export default async function SurMesurePage() {
       <PageHero
         compact
         crumbs={[{ name: "Gâteaux sur mesure", path: "/gateaux-sur-mesure" }]}
-        label="Gâteaux d’anniversaire & créations personnalisées"
-        title={["Créez", <span key="i" className="it accent">votre gâteau.</span>]}
+        label="Anniversaire, mariage, baptême, naissance, entreprise"
+        title={["Un gâteau", <span key="i" className="it accent">imaginé pour vous.</span>]}
         intro={
           <p>
-            Anniversaire, mariage, baptême, naissance ou événement d’entreprise : composez votre gâteau en quelques étapes. Nos pâtissiers le réalisent
-            dans notre boutique de Nogent-sur-Oise, pour un retrait à la date de votre choix.
+            Composez votre demande en quelques étapes. Nous l’étudions, puis nous vous confirmons la faisabilité et le tarif, pour un retrait
+            en boutique à Nogent-sur-Oise.
           </p>
         }
       />

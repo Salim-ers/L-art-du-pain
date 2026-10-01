@@ -53,14 +53,14 @@ export default async function CustomTrackPage({ searchParams }: Props) {
 
   return (
     <main id="contenu" className="section flow">
-      <RememberOrder n={c.number} t={c.accessToken} kind="custom" label={`Gâteau ${c.occasion.toLowerCase()} — ${formatDate(c.desiredDate, "short")}`} />
+      <RememberOrder n={c.number} t={c.accessToken} kind="custom" label={`${c.kind === "special" ? "Demande" : "Gâteau"} ${c.occasion.toLowerCase()} — ${formatDate(c.desiredDate, "short")}`} />
       <div className="wrap track">
         <header className="track-head">
-          <p className="label">Gâteau sur mesure — {c.number}</p>
+          <p className="label">{c.kind === "special" ? "Commande particulière" : "Gâteau sur mesure"} — {c.number}</p>
           <h1 className="h-lg">
-            {searchParams.ok || searchParams.paid ? <>Merci {c.firstName},<br /><span className="it accent">c’est entre nos mains.</span></> : customStatusLabel[c.status]}
+            {searchParams.ok || searchParams.paid ? <>Demande envoyée.<br /><span className="it accent">Merci {c.firstName}.</span></> : customStatusLabel[c.status]}
           </h1>
-          {c.status === "pending" && <p className="body">La Maison étudie votre demande et revient vers vous par email ou téléphone.</p>}
+          {c.status === "pending" && <p className="body">Ce n’est pas encore une commande : la boulangerie étudie votre demande, puis vous confirme la faisabilité et le tarif définitif par email ou par téléphone.</p>}
           {searchParams.err && <p className="notice notice--err">Le paiement n’a pas pu démarrer. Merci de réessayer.</p>}
         </header>
 
@@ -76,27 +76,28 @@ export default async function CustomTrackPage({ searchParams }: Props) {
                 {deposit > 0 ? `Accepter et verser l’acompte de ${money(deposit)}` : "Accepter le devis"}
               </button>
             </form>
-            <p className="co-legal">Paiement sécurisé par Stripe — CB, Apple Pay, Google Pay. Le solde se règle en boutique.</p>
+            <p className="co-legal">Paiement sécurisé par Stripe. Le solde se règle en boutique.</p>
           </section>
         )}
         {c.status === "changes_requested" && c.adminMessage && (
-          <section className="track-card"><h2 className="track-h">Message de la Maison</h2><p className="body">{c.adminMessage}</p></section>
+          <section className="track-card"><h2 className="track-h">Notre message</h2><p className="body">{c.adminMessage}</p></section>
         )}
 
         <div className="track-grid">
           <section className="track-card">
-            <h2 className="track-h">Votre gâteau</h2>
+            <h2 className="track-h">{c.kind === "special" ? "Votre demande" : "Votre gâteau"}</h2>
             <dl className="recap">
-              <div><dt>Occasion</dt><dd>{c.occasion}</dd></div>
-              <div><dt>Personnes</dt><dd>{c.servings}</dd></div>
-              <div><dt>Gâteau</dt><dd>{c.cakeType}</dd></div>
-              <div><dt>Saveurs</dt><dd>{c.flavors.join(" / ")}</dd></div>
+              <div><dt>{c.kind === "special" ? "Type" : "Occasion"}</dt><dd>{c.occasion}</dd></div>
+              <div><dt>{c.kind === "special" ? "Quantité" : "Personnes"}</dt><dd>{c.servings}</dd></div>
+              {c.kind !== "special" && <div><dt>Gâteau</dt><dd>{c.cakeType}</dd></div>}
+              {c.flavors.length > 0 && <div><dt>Saveurs</dt><dd>{c.flavors.join(" / ")}</dd></div>}
+              {c.kind === "special" && c.comment && <div><dt>Précisions</dt><dd>{c.comment}</dd></div>}
               {c.message && <div><dt>Message</dt><dd>« {c.message} »</dd></div>}
               {c.estimateCents !== null && c.status !== "quote_sent" && <div><dt>Estimation</dt><dd>{money(c.quoteCents ?? c.estimateCents)}</dd></div>}
             </dl>
           </section>
           <section className="track-card">
-            <h2 className="track-h">Retrait souhaité</h2>
+            <h2 className="track-h">Date souhaitée</h2>
             <p className="track-big">{formatDate(c.desiredDate)}{c.desiredTime && <><br />{formatTime(c.desiredTime)}</>}</p>
             <p className="body body--sm">{site.name}<br />{site.address.street}<br />{site.address.postalCode} {site.address.city}</p>
           </section>

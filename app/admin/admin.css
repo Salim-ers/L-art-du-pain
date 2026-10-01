@@ -113,6 +113,7 @@ a.akpi:hover { transform: translateY(-2px); box-shadow: 0 6px 18px -10px rgba(0,
 .strong { font-weight: 700; color: var(--a-ink); }
 .amuted { color: var(--a-muted); font-size: 13px; }
 .aerr { margin: 0 0 12px; padding: 10px 12px; border-radius: 6px; background: var(--a-err-bg); color: var(--a-err); font-weight: 500; }
+.ainfo { margin: 0 0 12px; padding: 10px 120px 10px 12px; border-radius: 6px; background: var(--a-warn-bg); color: var(--a-warn); font-weight: 500; }
 .aempty { margin: 0; padding: 18px; text-align: center; color: var(--a-muted); background: var(--a-bg); border-radius: 6px; }
 .abig { font-size: 18px; font-weight: 700; color: var(--a-ink); line-height: 1.35; }
 

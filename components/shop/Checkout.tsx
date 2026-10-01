@@ -180,7 +180,7 @@ export function Checkout({ card, onSite, step, cancelled }: Props) {
               <label className="pay" data-on={method === "card" ? "" : undefined}>
                 <input type="radio" name="method" checked={method === "card"} onChange={() => setMethod("card")} />
                 <span className="pay-title">Payer maintenant</span>
-                <span className="pay-sub">Carte bancaire, Apple Pay, Google Pay — paiement sécurisé par Stripe</span>
+                <span className="pay-sub">Carte bancaire — paiement sécurisé par Stripe</span>
               </label>
             )}
             {onSite && (

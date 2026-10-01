@@ -61,6 +61,17 @@ export const customInput = z.object({
   acceptTerms: z.literal(true, { error: "Merci d’accepter les conditions générales de vente" }),
 });
 
+/** Commande particulière (entreprise, grande quantité, buffet…) : une demande, jamais une commande acceptée d'office. */
+export const specialInput = z.object({
+  type: text(60, 1),
+  desiredDate: isoDate,
+  quantity: text(60, 1),
+  comment: text(1500, 5),
+  ...contactFields,
+  // Pot de miel anti-robots : doit rester vide.
+  website: z.string().max(0).optional(),
+});
+
 export const contactInput = z.object({
   name: text(120, 1),
   email,

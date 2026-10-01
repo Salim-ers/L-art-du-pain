@@ -10,6 +10,7 @@ import { pickupWindow } from "@/components/Teasers";
 import { getProduct, listProducts } from "@/lib/catalog";
 import { breadcrumbJsonLd, productJsonLd } from "@/lib/schema";
 import { site } from "@/content/site";
+import { DemoNote } from "@/components/shop/CatalogNotes";
 
 // Servie par le CDN, régénérée en arrière-plan (au plus 60 s) et dès qu’une modification est faite dans la gestion.
 export const revalidate = 60;
@@ -23,7 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return {};
   return {
     title: `${p.name} — ${p.category?.name ?? "Boulangerie"} à Nogent-sur-Oise`,
-    description: (p.shortDescription ?? p.description ?? p.name) + ` Commandez en ligne chez ${site.name}, retrait en boutique à Nogent-sur-Oise.`,
+    description: (p.shortDescription ?? p.description ?? p.name) + ` ${site.name}, boulangerie pâtisserie à Nogent-sur-Oise.`,
+    // Un produit d'exemple n'est jamais proposé aux moteurs de recherche.
+    ...(p.demo ? { robots: { index: false, follow: true } } : {}),
     alternates: { canonical: "/produit/" + p.slug },
     openGraph: p.image ? { images: [{ url: p.image, alt: p.name }] } : undefined,
   };
@@ -35,7 +38,7 @@ export default async function ProductPage({ params }: Props) {
   const related = p.category ? (await listProducts()).filter((x) => x.category?.slug === p.category!.slug && x.id !== p.id).slice(0, 4) : [];
   const crumbs = [
     { name: "Accueil", path: "/" },
-    { name: "Commander", path: "/commander" },
+    { name: "Nos créations", path: "/commander" },
     ...(p.category ? [{ name: p.category.name, path: "/commander/" + p.category.slug }] : []),
     { name: p.name, path: "/produit/" + p.slug },
   ];
@@ -43,7 +46,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main id="contenu" className="product">
-      <JsonLd data={productJsonLd(p)} />
+      {!p.demo && <JsonLd data={productJsonLd(p)} />}
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <div className="section product-top">
         <div className="wrap product-grid">
@@ -60,6 +63,7 @@ export default async function ProductPage({ params }: Props) {
             </nav>
             <h1 className="h-lg product-title">{p.name}</h1>
             {p.shortDescription && <p className="product-lead">{p.shortDescription}</p>}
+            <DemoNote products={[p]} />
             {p.campaign && (
               <p className="product-campaign">
                 <strong>{p.campaign.name}</strong>
@@ -79,8 +83,9 @@ export default async function ProductPage({ params }: Props) {
               <div>
                 <dt>Disponibilité</dt>
                 <dd>
-                  {p.orderable ? "Disponible en Click & Collect" : p.unavailable}
+                  {p.orderable ? "À commander en ligne, retrait en boutique" : p.unavailable === "En boutique" ? "En boutique — pour une grande quantité, faites une demande" : p.unavailable}
                   {p.leadTimeHours > 0 && ` — à commander ${p.leadTimeHours} h à l’avance`}
+                  {p.minQuantity > 1 && ` — à partir de ${p.minQuantity} pièces`}
                 </dd>
               </div>
               <div>

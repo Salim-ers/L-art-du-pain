@@ -33,8 +33,9 @@ export function Reveal({ as: Tag = "div", kind = "up", delay = 0, className = ""
       },
       { rootMargin: "0px 0px -12% 0px", threshold: 0.05 }
     );
-    // Une ligne masquée est entièrement rognée par son parent : on observe le parent.
-    io.observe(kind === "line" && el.parentElement ? el.parentElement : el);
+    // Une ligne ou une photo masquée est entièrement rognée (par son parent ou son propre clip-path) :
+    // l'observateur n'y verrait jamais de surface visible, on observe donc le parent.
+    io.observe(kind !== "up" && el.parentElement ? el.parentElement : el);
     return () => io.disconnect();
   }, [kind]);
 

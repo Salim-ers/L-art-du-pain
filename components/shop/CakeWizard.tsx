@@ -12,7 +12,7 @@ import { resizeImage } from "@/lib/resize-image";
 
 type Props = { cake: CakeSettings; modes: ("quote" | "pay")[]; depositPercent: number; step: number };
 
-const STEPS = ["Occasion", "Personnes", "Gâteau", "Saveurs", "Message", "Inspiration", "Date", "Commentaire", "Coordonnées", "Confirmation"];
+const STEPS = ["Occasion", "Personnes", "Style", "Saveurs", "Message", "Inspiration", "Date", "Précisions", "Coordonnées", "Envoi"];
 const MAX_MB = 6;
 
 export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Props) {
@@ -36,12 +36,18 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
   const top = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Occasion choisie depuis l'accueil (?occasion=…) : on passe directement à l'étape suivante.
+    const pre = new URLSearchParams(window.location.search).get("occasion");
+    if (pre && cake.occasions.includes(pre)) {
+      setOccasion(pre);
+      setI(1);
+    }
     customPickupDays().then((r) => r.ok && setDays(r.days));
     try {
       const saved = JSON.parse(localStorage.getItem("adp-contact") || "null");
       if (saved) setContact((c) => ({ ...c, ...saved }));
     } catch {}
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => void (preview && URL.revokeObjectURL(preview)), [preview]);
 
@@ -51,7 +57,8 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
   }, [i]);
 
   const cakeType = cake.types.find((t) => t.id === type) ?? null;
-  const estimate = cakeType && servings ? cakeType.pricePerServingCents * (parseInt(servings, 10) || 1) : null;
+  // Aucune estimation tant que la boutique n'a pas validé ses tarifs : le prix définitif est confirmé après étude.
+  const estimate = cake.showEstimate && cakeType && servings ? cakeType.pricePerServingCents * (parseInt(servings, 10) || 1) : null;
   const deposit = estimate ? Math.round((estimate * depositPercent) / 100) : 0;
 
   const valid = [
@@ -152,14 +159,14 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
 
           {i === 2 && (
             <>
-              <h2 className="h-md">Quel type de gâteau ?</h2>
+              <h2 className="h-md">Quel style de gâteau ?</h2>
               <div className="types" role="radiogroup">
                 {cake.types.map((t) => (
                   <button key={t.id} type="button" role="radio" aria-checked={type === t.id} className="type" onClick={() => { setType(t.id); setTimeout(() => go(i + 1), 220); }}>
                     <span className="type-media">{t.image ? <img src={t.image} alt="" loading="lazy" /> : null}</span>
                     <span className="type-name">{t.name}</span>
                     <span className="type-desc">{t.description}</span>
-                    <span className="type-price">env. {money(t.pricePerServingCents)} / pers.</span>
+                    {cake.showEstimate && t.pricePerServingCents > 0 && <span className="type-price">env. {money(t.pricePerServingCents)} / pers.</span>}
                   </button>
                 ))}
               </div>
@@ -229,7 +236,7 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
 
           {i === 7 && (
             <>
-              <h2 className="h-md">Un commentaire ?</h2>
+              <h2 className="h-md">Des précisions ?</h2>
               <label className="field">
                 <span>Décor, couleurs, allergies, nombre exact de convives… (facultatif)</span>
                 <textarea rows={6} maxLength={1500} value={comment} onChange={(e) => setComment(e.target.value)} />
@@ -253,7 +260,8 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
 
           {i === 9 && (
             <>
-              <h2 className="h-md">Récapitulatif</h2>
+              <h2 className="h-md">Votre demande</h2>
+              <p className="wiz-hint">Ce n’est pas encore une commande : nous étudions votre demande, puis nous vous confirmons la faisabilité et le tarif définitif.</p>
               <dl className="recap">
                 <div><dt>Occasion</dt><dd>{occasion}</dd></div>
                 <div><dt>Personnes</dt><dd>{servings}</dd></div>
@@ -271,14 +279,14 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
                   <label className="pay" data-on={mode === "pay" ? "" : undefined}>
                     <input type="radio" checked={mode === "pay"} onChange={() => setMode("pay")} />
                     <span className="pay-title">Payer maintenant{depositPercent < 100 ? ` un acompte de ${depositPercent} %` : ""}</span>
-                    <span className="pay-sub">{estimate ? `${money(deposit)} en ligne, le solde en boutique. ` : ""}La Maison valide ensuite la faisabilité.</span>
+                    <span className="pay-sub">{estimate ? `${money(deposit)} en ligne, le solde en boutique. ` : ""}Nous vérifions ensuite la faisabilité.</span>
                   </label>
                 )}
                 {modes.includes("quote") && (
                   <label className="pay" data-on={mode === "quote" ? "" : undefined}>
                     <input type="radio" checked={mode === "quote"} onChange={() => setMode("quote")} />
-                    <span className="pay-title">Demander un devis</span>
-                    <span className="pay-sub">Sans engagement : nous vous envoyons une proposition par email.</span>
+                    <span className="pay-title">Envoyer ma demande</span>
+                    <span className="pay-sub">Sans engagement : nous vous répondons par email ou par téléphone avec le tarif.</span>
                   </label>
                 )}
               </div>
@@ -314,7 +322,9 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
             <li><span>Saveurs</span>{flavors.length ? flavors.join(" / ") : "—"}</li>
             <li><span>Date</span>{date ? formatDate(date, "short") + (time ? " · " + formatTime(time) : "") : "—"}</li>
           </ul>
-          <p className="wiz-estimate">{estimate !== null ? <>Estimation <strong>{money(estimate)}</strong></> : "L’estimation s’affiche au fil de vos choix."}</p>
+          <p className="wiz-estimate">
+            {estimate !== null ? <>Estimation <strong>{money(estimate)}</strong></> : cake.showEstimate ? "L’estimation s’affiche au fil de vos choix." : "Le tarif vous est confirmé après étude de votre demande."}
+          </p>
         </aside>
       </div>
     </div>

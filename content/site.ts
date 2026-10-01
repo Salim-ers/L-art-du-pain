@@ -37,12 +37,12 @@ export const site: SiteContent = {
   name: "L’Art du Pain",
   // ⚠️ À remplacer par le vrai nom de domaine avant mise en ligne (canonical, sitemap, OpenGraph).
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.lartdupain-nogent.fr",
-  tagline: "Le savoir-faire artisanal, façonné chaque jour.",
+  tagline: "Du pain du matin aux gâteaux des grands jours.",
 
   seo: {
     title: "L’Art du Pain | Boulangerie pâtisserie artisanale à Nogent-sur-Oise",
     description:
-      "L’Art du Pain, boulangerie pâtisserie artisanale à Nogent-sur-Oise, près de Creil. Pains, viennoiseries, pâtisseries, gâteaux sur mesure et bûches de Noël. Commande en ligne et Click & Collect.",
+      "L’Art du Pain, boulangerie pâtisserie artisanale à Nogent-sur-Oise, près de Creil. Gâteaux personnalisés, commandes pour vos événements et créations de fêtes, à retirer en boutique.",
     keywords: [
       "Boulangerie Nogent-sur-Oise",
       "Boulangerie pâtisserie Nogent-sur-Oise",
@@ -99,9 +99,9 @@ export const site: SiteContent = {
 
   // Barre de navigation (bureau)
   nav: [
-    { label: "Nos produits", href: "/commander" },
+    { label: "Créations", href: "/commander" },
     { label: "Sur mesure", href: "/gateaux-sur-mesure" },
-    { label: "Noël", href: "/noel" },
+    { label: "Événements", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
@@ -109,10 +109,10 @@ export const site: SiteContent = {
   // Menu complet (plein écran)
   menu: [
     { label: "Accueil", href: "/" },
-    { label: "Commander", href: "/commander" },
+    { label: "Nos créations", href: "/commander" },
     { label: "Gâteaux sur mesure", href: "/gateaux-sur-mesure" },
-    { label: "Événements", href: "/evenements" },
-    { label: "Noël & Fêtes", href: "/noel" },
+    { label: "Commandes particulières", href: "/commandes-speciales" },
+    { label: "Événements & fêtes", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
   ],
@@ -120,15 +120,15 @@ export const site: SiteContent = {
   local: {
     title: "Boulangerie pâtisserie à Nogent-sur-Oise",
     paragraphs: [
-      "L’Art du Pain est installée au 28 Avenue Saint-Exupéry, à Nogent-sur-Oise. Chaque jour, nous y préparons pains, viennoiseries, pâtisseries et snacking salé, du premier croissant du matin à la baguette du soir.",
-      "Pour gagner du temps, commandez en ligne et retirez en boutique à l’heure de votre choix : c’est notre Click & Collect. Pour un anniversaire, un baptême ou un événement d’entreprise, nous réalisons aussi des gâteaux personnalisés, et chaque hiver une collection de bûches de Noël à précommander.",
+      "L’Art du Pain est une boulangerie pâtisserie du 28 Avenue Saint-Exupéry, à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul.",
+      "Pour un anniversaire, un baptême ou un événement d’entreprise, faites votre demande de gâteau personnalisé en ligne et retirez-le en boutique au jour choisi. Petits-déjeuners, buffets, grandes quantités : faites-nous une demande, nous revenons vers vous.",
     ],
     towns: [
       { name: "Nogent-sur-Oise", text: "La boutique, au 28 Avenue Saint-Exupéry." },
       { name: "Creil", text: "Juste de l’autre côté de l’Oise : commandez avant de passer." },
       { name: "Montataire", text: "Un détour rapide pour vos commandes du week-end." },
-      { name: "Villers-Saint-Paul", text: "Gâteaux d’anniversaire et bûches à retirer sans attendre." },
-      { name: "Monchy-Saint-Éloi", text: "Pain et viennoiseries réservés, prêts à votre arrivée." },
+      { name: "Villers-Saint-Paul", text: "Votre gâteau d’anniversaire à retirer à l’heure choisie." },
+      { name: "Monchy-Saint-Éloi", text: "À quelques minutes, pour vos commandes d’événements." },
     ],
   },
 
