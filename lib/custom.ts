@@ -19,12 +19,14 @@ import { availableDays } from "@/lib/slots";
 import { createCheckout, stripe } from "@/lib/stripe";
 import { customInput, specialInput } from "@/lib/validation";
 import { specialRequestTypes } from "@/content/special";
+import { demoCakeTypePhotos } from "@/content/demo-photos";
 import type { z } from "zod";
 
 const servingsNumber = (v: string) => parseInt(v, 10) || 1;
 
 export async function customConfig() {
-  const [cake, payments] = await Promise.all([getSetting("cake"), getSetting("payments")]);
+  const [cake, payments, catalog] = await Promise.all([getSetting("cake"), getSetting("payments"), getSetting("catalog")]);
+  if (catalog.demo) cake.types = cake.types.map((t) => ({ ...t, image: t.image ?? demoCakeTypePhotos[t.id]?.src ?? null }));
   // Sans estimation validée, aucun prix ne peut être payé d'avance : uniquement une demande.
   const online = payments.card && !!stripe() && cake.showEstimate;
   const modes: ("quote" | "pay")[] =

@@ -1,6 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { customPickupDays, submitCustom } from "@/app/(site)/actions";
@@ -163,7 +164,7 @@ export function CakeWizard({ cake, modes, depositPercent, step: slotStep }: Prop
               <div className="types" role="radiogroup">
                 {cake.types.map((t) => (
                   <button key={t.id} type="button" role="radio" aria-checked={type === t.id} className="type" onClick={() => { setType(t.id); setTimeout(() => go(i + 1), 220); }}>
-                    <span className="type-media">{t.image ? <img src={t.image} alt="" loading="lazy" /> : null}</span>
+                    <span className="type-media">{t.image ? <Image src={t.image} alt="" width={480} height={360} sizes="(min-width: 900px) 240px, 45vw" /> : null}</span>
                     <span className="type-name">{t.name}</span>
                     <span className="type-desc">{t.description}</span>
                     {cake.showEstimate && t.pricePerServingCents > 0 && <span className="type-price">env. {money(t.pricePerServingCents)} / pers.</span>}

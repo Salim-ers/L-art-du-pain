@@ -17,6 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: c.seoTitle ?? `${c.name} — L’Art du Pain, Nogent-sur-Oise`,
     description: c.seoDescription ?? c.description ?? undefined,
     alternates: { canonical: "/evenements/" + c.slug },
+    // Campagne d'exemple : jamais proposée aux moteurs de recherche.
+    ...(c?.isDemo ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

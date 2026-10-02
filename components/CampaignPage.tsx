@@ -7,6 +7,7 @@ import { JsonLd } from "./JsonLd";
 import { Line, Reveal } from "./Reveal";
 import { AddToCart } from "./shop/AddToCart";
 import { ProductImage } from "./shop/ProductImage";
+import { DemoNote } from "./shop/CatalogNotes";
 import { pickupWindow, WarmLights } from "./Teasers";
 import { Faq, type FaqItem } from "./Faq";
 
@@ -77,13 +78,14 @@ export function CampaignPage({ campaign: c, products, path, faq }: { campaign: C
 
       <section id="collection" className="section camp-list" aria-label="La collection">
         <div className="wrap">
+          <div className="camp-demo"><DemoNote products={products} /></div>
           {products.map((p, i) => (
             <article key={p.id} className="camp-item" data-flip={i % 2 ? "" : undefined}>
               <Reveal kind="mask" className="camp-media">
                 <ProductImage src={p.image} alt={p.name} sizes="(min-width: 900px) 50vw, 100vw" tone="dark" />
               </Reveal>
               <div className="camp-text">
-                <Reveal as="p" className="label label--light">{String(i + 1).padStart(2, "0")} — {c.name}</Reveal>
+                <Reveal as="p" className="label label--light">{String(i + 1).padStart(2, "0")} — {c.name}{p.demo && " — exemple"}</Reveal>
                 <h2 className="h-lg"><Line>{p.name}</Line></h2>
                 {p.description && <Reveal as="p" className="camp-desc">{p.description}</Reveal>}
                 {p.composition && (

@@ -19,8 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
     title: c?.seoTitle ?? "Bûche de Noël à Nogent-sur-Oise — précommande",
     description:
       c?.seoDescription ??
-      "Précommandez votre bûche de Noël artisanale chez L’Art du Pain à Nogent-sur-Oise. Chocolat, praliné, fruits : retrait en boutique pendant les fêtes.",
+      "Les créations de Noël de L’Art du Pain à Nogent-sur-Oise, à précommander en ligne et à retirer en boutique pendant les fêtes.",
     alternates: { canonical: "/noel" },
+    // Campagne d'exemple : jamais proposée aux moteurs de recherche.
+    ...(c?.isDemo ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

@@ -20,13 +20,14 @@ export const revalidate = 60;
  * · 6. avis & réassurance · 7. nous trouver · 8. commandes particulières (appel final, dans le pied de page).
  */
 export default async function HomePage() {
-  const [categories, campaign, gallery, reviews, cake, reassurance] = await Promise.all([
+  const [categories, campaign, gallery, reviews, cake, reassurance, catalog] = await Promise.all([
     listCategories(),
     featuredCampaign(),
     getGallery(),
     getReviews(),
     getSetting("cake"),
     getSetting("reassurance"),
+    getSetting("catalog"),
   ]);
 
   return (
@@ -35,7 +36,7 @@ export default async function HomePage() {
       <Intro />
       <main id="contenu">
         <Hero />
-        <Families categories={categories} campaign={campaign} />
+        <Families categories={categories} campaign={campaign} demo={catalog.demo} />
         <CustomCake occasions={cake.occasions} />
         <Maison />
         <HomeGallery items={gallery.map((m) => ({ id: m.id, url: m.url, alt: m.alt, caption: m.caption, category: m.category, format: m.format }))} />

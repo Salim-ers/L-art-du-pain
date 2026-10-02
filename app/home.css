@@ -101,3 +101,5 @@
 /* ---------- En-tête : intitulés sur une ligne ---------- */
 .nav-link { white-space: nowrap; }
 .form.special > .btn { align-self: flex-start; }
+.camp-demo .demo-note { margin-bottom: clamp(24px, 4vh, 40px); color: rgba(242, 237, 228, .82); border-color: rgba(242, 237, 228, .35); }
+.camp-demo .demo-note strong { color: var(--ivory); }

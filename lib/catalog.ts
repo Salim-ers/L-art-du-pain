@@ -4,6 +4,12 @@ import { getDb, schema as s } from "@/lib/db";
 import type { Category, Event, Product } from "@/lib/db/schema";
 import { campaignDates, campaignState, type CampaignState } from "@/lib/events";
 import { getSetting } from "@/lib/settings";
+import { isUploaded } from "@/content/photos";
+import { demoCampaignPhotos, demoProductPhotos } from "@/content/demo-photos";
+
+/** Photo affichée : celle de la gestion, sinon — pour une donnée d'exemple uniquement — une photo d'exemple. */
+const exampleImage = (image: string | null, isDemo: boolean, photo: { src: string } | undefined) =>
+  isUploaded(image) || !isDemo ? image : photo?.src ?? null;
 
 /** Les données d'exemple (is_demo) ne sont visibles qu'en mode démonstration (Gestion → Paramètres). */
 export async function demoVisible() {
@@ -60,7 +66,7 @@ export async function listCampaigns(opts: { publishedOnly?: boolean } = {}): Pro
   const counts = await eventOrderCounts(rows.map((r) => r.id));
   return rows.map((e) => {
     const n = counts.get(e.id) ?? 0;
-    return { ...e, orderCount: n, state: campaignState(e, n), dates: campaignDates(e) };
+    return { ...e, heroImage: exampleImage(e.heroImage, e.isDemo, demoCampaignPhotos[e.slug]), orderCount: n, state: campaignState(e, n), dates: campaignDates(e) };
   });
 }
 
@@ -176,7 +182,7 @@ function toView(
     shortDescription: p.shortDescription,
     description: p.description,
     composition: p.composition,
-    image: p.image,
+    image: exampleImage(p.image, p.isDemo, demoProductPhotos[p.slug]),
     priceCents: Math.min(...prices),
     fromPrice: new Set(prices).size > 1,
     allergens: p.allergens,

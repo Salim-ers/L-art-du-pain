@@ -4,6 +4,7 @@ import type { Category } from "@/lib/db/schema";
 import type { CampaignView } from "@/lib/catalog";
 import { campaignStateLabel } from "@/lib/events";
 import { familyPhotos, isUploaded } from "@/content/photos";
+import { demoFamilyPhotos } from "@/content/demo-photos";
 import { SectionLabel } from "../SectionLabel";
 import { Reveal } from "../Reveal";
 
@@ -13,16 +14,16 @@ type Card = { key: string; title: string; text: string | null; href: string; ima
  * « Nos créations » : les grandes familles, en photos. Une famille n'apparaît que si elle a une vraie photo
  * (ajoutée depuis la gestion, ou visuel de l'univers défini dans content/photos.ts). Les gâteaux ont leur propre section.
  */
-export function Families({ categories, campaign }: { categories: Category[]; campaign: CampaignView | null }) {
+export function Families({ categories, campaign, demo }: { categories: Category[]; campaign: CampaignView | null; demo: boolean }) {
   const cards: Card[] = categories
     .filter((c) => c.slug !== "fetes" && c.slug !== "gateaux")
     .map((c) => {
-      const photo = isUploaded(c.image) ? { src: c.image, alt: c.name } : familyPhotos[c.slug] ?? null;
+      const photo = isUploaded(c.image) ? { src: c.image, alt: c.name } : familyPhotos[c.slug] ?? (demo ? demoFamilyPhotos[c.slug] : null) ?? null;
       return { key: c.slug, title: c.name, text: c.tagline, href: "/commander/" + c.slug, image: photo };
     })
     .filter((c) => c.image);
 
-  const seasonImage = isUploaded(campaign?.heroImage) ? { src: campaign!.heroImage!, alt: campaign!.name } : null;
+  const seasonImage = campaign?.heroImage ? { src: campaign.heroImage, alt: campaign.name } : null;
   cards.push({
     key: "saison",
     title: "Créations de saison",
