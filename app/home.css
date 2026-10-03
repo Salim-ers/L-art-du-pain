@@ -128,15 +128,21 @@
 .rv-author small { font-weight: 400; color: var(--muted); font-size: 12px; }
 .rv-foot { display: flex; justify-content: center; margin-top: clamp(28px, 5vh, 48px); }
 
-/* ---------- Contact ---------- */
-.contact-page { padding-top: clamp(20px, 4vh, 40px); padding-bottom: clamp(80px, 14vh, 160px); }
-.contact-page-grid { display: grid; gap: clamp(32px, 5vw, 80px); grid-template-columns: minmax(0, 1fr); align-items: start; }
-.contact-page-grid .form { width: 100%; align-items: stretch; }
-.contact-page-grid .form .btn { align-self: flex-start; }
-.contact-aside { display: flex; flex-direction: column; gap: 16px; padding: clamp(22px, 2.4vw, 32px); background: var(--cream, #FAF6EF); border: 1px solid var(--line); font-size: 15px; }
-@media (min-width: 900px) { .contact-page-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
 /* Écrans moyens (portable 13") : le menu complet tient sur une ligne, le logo seul suffit à identifier la marque. */
 @media (min-width: 1180px) and (max-width: 1439px) {
   .hdr .brand > span { display: none; }
   .nav { gap: clamp(16px, 1.6vw, 26px); letter-spacing: .16em; }
 }
+
+/* ---------- Hero : « Commander un gâteau », action principale ---------- */
+.hero-order--main {
+  min-height: 64px; padding: 0 34px; gap: 18px; font-size: 13px; letter-spacing: .2em;
+  background: var(--terra-deep); color: var(--ivory); box-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+}
+.hero-order--main:hover { background: var(--ivory); color: var(--ink); }
+.hero-order--ghost { min-height: 64px; }
+@media (max-width: 560px) { .hero-order--main { min-height: 60px; font-size: 12px; } .hero-order--ghost { min-height: 54px; } }
+/* En-tête : même couleur pour l'appel au gâteau. */
+.hdr .hdr-cta, .hdr[data-solid] .hdr-cta { background: var(--terra-deep); border-color: var(--terra-deep); color: var(--ivory); }
+.hdr .hdr-cta:hover { background: var(--ivory); border-color: var(--ivory); color: var(--ink); }
+.hdr[data-solid] .hdr-cta:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }

@@ -15,7 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/commandes-speciales", 0.8),
     page("/noel", 0.8),
     page("/nous-trouver", 0.8, "monthly"),
-    page("/contact", 0.6, "yearly"),
     page("/galerie", 0.5),
     page("/evenements", 0.6),
     ...categories.filter((c) => c.slug !== "fetes").map((c) => page("/commander/" + c.slug, 0.7)),

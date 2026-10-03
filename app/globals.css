@@ -83,7 +83,9 @@ section[id], footer[id] { scroll-margin-top: calc(var(--hdr) + 28px); }
 .rv-up { opacity: 0; transform: translateY(26px); }
 .rv-line { transform: translateY(105%); }
 .rv-mask { clip-path: inset(0 0 100% 0); transform: scale(1.04); }
-.rv[data-shown] { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+.rv[data-shown] { opacity: 1; transform: none; }
+/* Le rognage ne concerne que les photos dévoilées : sur du texte, il couperait les jambages (g, p, ç) et les accents. */
+.rv-mask[data-shown] { clip-path: inset(0 0 0 0); }
 
 /* ---------- Media ---------- */
 .frame { position: relative; overflow: hidden; background: var(--sand); }

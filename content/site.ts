@@ -103,8 +103,7 @@ export const site: SiteContent = {
     { label: "Sur mesure", href: "/gateaux-sur-mesure" },
     { label: "Événements", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
-    { label: "Nous trouver", href: "/nous-trouver" },
-    { label: "Contact", href: "/contact" },
+    { label: "Contact", href: "/nous-trouver" },
   ],
 
   // Menu complet (plein écran)
@@ -115,8 +114,7 @@ export const site: SiteContent = {
     { label: "Commandes particulières", href: "/commandes-speciales" },
     { label: "Événements & fêtes", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
-    { label: "Nous trouver", href: "/nous-trouver" },
-    { label: "Contact", href: "/contact" },
+    { label: "Contact", href: "/nous-trouver" },
   ],
 
   local: {

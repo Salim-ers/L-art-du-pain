@@ -36,7 +36,7 @@ export function Footer() {
           <div className="footer-col">
             <span className="footer-h">Contact</span>
             {phone && <a href={"tel:" + phone.tel}>{phone.display}</a>}
-            <Link href="/contact">Nous écrire</Link>
+            <Link href="/nous-trouver#contact">Nous écrire</Link>
             <Link href="/compte">Suivre ma commande</Link>
             <a href={links.review} target="_blank" rel="noopener noreferrer">Laisser un avis Google ↗</a>
             {social.instagram && <a href={social.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}

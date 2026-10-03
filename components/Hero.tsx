@@ -55,19 +55,20 @@ export function Hero() {
           <div className="hero-foot">
             <p className="hero-tag hero-in" style={v(2)}>{site.tagline}</p>
             <div className="hero-actions hero-in" style={v(3)}>
-              <a href="#creations" className="hero-order">
+              <Link href="/gateaux-sur-mesure" className="hero-order hero-order--main">
+                <span className="roll">
+                  <span>Commander un gâteau</span>
+                  <span aria-hidden="true">Commander un gâteau</span>
+                </span>
+                <span className="arrow" aria-hidden="true">→</span>
+              </Link>
+              <a href="#creations" className="hero-order hero-order--ghost">
                 <span className="roll">
                   <span>Découvrir nos créations</span>
                   <span aria-hidden="true">Découvrir nos créations</span>
                 </span>
                 <span className="arrow" aria-hidden="true">↓</span>
               </a>
-              <Link href="/gateaux-sur-mesure" className="hero-order hero-order--ghost">
-                <span className="roll">
-                  <span>Commander un gâteau</span>
-                  <span aria-hidden="true">Commander un gâteau</span>
-                </span>
-              </Link>
               <a href="#boutique" className="ulink hero-link">
                 <span>Nous trouver</span>
               </a>

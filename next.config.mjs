@@ -37,6 +37,8 @@ const nextConfig = {
       { source: "/la-maison", destination: "/", permanent: true },
       { source: "/savoir-faire", destination: "/", permanent: true },
       { source: "/nos-creations", destination: "/commander", permanent: true },
+      // Contact et « Nous trouver » ne forment qu'une page.
+      { source: "/contact", destination: "/nous-trouver#contact", permanent: true },
     ];
   },
   async headers() {

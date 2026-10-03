@@ -13,7 +13,7 @@ import { getReviews } from "@/lib/site-data";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Nous trouver — boulangerie à Nogent-sur-Oise, près de Creil",
+  title: "Contact et accès — L’Art du Pain, boulangerie à Nogent-sur-Oise",
   description:
     "L’Art du Pain, 28 Avenue Saint-Exupéry, 60180 Nogent-sur-Oise. Boulangerie pâtisserie ouverte tous les jours, à quelques minutes de Creil, Montataire et Villers-Saint-Paul. Itinéraire, Waze, téléphone.",
   alternates: { canonical: "/nous-trouver" },
@@ -26,10 +26,10 @@ export default async function NousTrouverPage() {
       <JsonLd data={localBusinessJsonLd({ reviews: reviews.own ? reviews.items : [] })} />
       <PageHero
         compact
-        crumbs={[{ name: "Nous trouver", path: "/nous-trouver" }]}
+        crumbs={[{ name: "Contact", path: "/nous-trouver" }]}
         label={`${site.address.street} — ${site.address.postalCode} ${site.address.city}`}
-        title={["Nous trouver"]}
-        intro={<p>La boutique se trouve à Nogent-sur-Oise, à deux pas de Creil. {site.hours ? site.hours.display + "." : ""} Commandez en ligne pour trouver votre commande prête à votre arrivée.</p>}
+        title={["Contact", <span key="i" className="it accent">& accès.</span>]}
+        intro={<p>La boutique se trouve à Nogent-sur-Oise, à deux pas de Creil. {site.hours ? site.hours.display + "." : ""} Une question, une allergie, une commande pour une entreprise ? <a className="ulink" href="#contact"><span>Écrivez-nous</span></a>.</p>}
       />
       <Location />
       <section id="contact" className="section contact">
