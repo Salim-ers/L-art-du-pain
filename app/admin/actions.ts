@@ -14,6 +14,7 @@ import { isIsoDate } from "@/lib/dates";
 import { canSignSessions } from "@/lib/env";
 import { slugify } from "@/lib/format";
 import { ALLERGENS } from "@/lib/labels";
+import { eventTemplates } from "@/lib/event-templates";
 import { mails, sendEmail, sendMessage } from "@/lib/notify";
 import { OrderError, setOrderStatus } from "@/lib/orders";
 import { audit, clientIp, limitOrThrow, logError, rateLimit, RateLimitError } from "@/lib/security";
@@ -188,7 +189,7 @@ export async function customAct(fd: FormData) {
     }
     await customAction(id, action, data);
     await audit(u.id, "custom." + action, "custom_order", id, data);
-    return { accept: "Commande acceptée", changes: "Demande de modification envoyée", refuse: "Demande refusée", quote: "Devis envoyé", cancel: "Commande annulée" }[action];
+    return { accept: "Commande acceptée", changes: "Demande de modification envoyée", refuse: "Demande refusée", quote: "Demande validée : le client a reçu le récapitulatif et le lien de paiement de l’acompte", cancel: "Commande annulée" }[action];
   });
 }
 
@@ -410,6 +411,34 @@ export async function saveEvent(fd: FormData) {
     await audit(u.id, id ? "event.update" : "event.create", "event", eventId, { name, published: values.published });
     if (!id) redirect(withMsg("/admin/evenements/" + eventId, "ok", "Campagne créée"));
     return "Campagne enregistrée";
+  });
+}
+
+/** Active / désactive un événement (publié sur le site ou non). */
+export async function toggleEvent(fd: FormData) {
+  await run(fd, "ADMIN", "/admin/evenements", async (u) => {
+    const id = uuid.parse(str(fd, "id"));
+    const db = await getDb();
+    const [e] = await db.update(s.events).set({ published: sql`not ${s.events.published}`, updatedAt: new Date() }).where(eq(s.events.id, id)).returning();
+    await audit(u.id, "event.toggle", "event", id, { published: e?.published });
+    return e?.published ? `« ${e.name} » est activé sur le site` : `« ${e?.name} » est désactivé`;
+  });
+}
+
+/** Crée un événement en brouillon à partir d'un modèle (Noël, Épiphanie, Aïd…), puis ouvre sa fiche. */
+export async function createEventFromTemplate(fd: FormData) {
+  await run(fd, "ADMIN", "/admin/evenements", async (u) => {
+    const t = eventTemplates.find((x) => x.kind === str(fd, "kind"));
+    if (!t) throw new OrderError("Modèle inconnu.");
+    const year = new Date().getFullYear();
+    const name = `${t.label} ${year}`;
+    const db = await getDb();
+    const [e] = await db
+      .insert(s.events)
+      .values({ name, slug: await uniqueSlug(s.events, name), kind: t.kind, headline: t.headline, subtitle: t.subtitle, published: false })
+      .returning();
+    await audit(u.id, "event.create", "event", e.id, { template: t.kind });
+    redirect(withMsg("/admin/evenements/" + e.id, "ok", `« ${name} » créé en brouillon : ajoutez les produits et les dates, puis activez-le.`));
   });
 }
 

@@ -65,8 +65,8 @@ export default async function CustomTrackPage({ searchParams }: Props) {
         </header>
 
         {c.status === "quote_sent" && (
-          <section className="track-card quote">
-            <h2 className="track-h">Votre devis</h2>
+          <section className="track-card quote" id="payer">
+            <h2 className="track-h">Votre demande est validée</h2>
             <p className="track-big">{money(c.quoteCents ?? 0)}</p>
             {c.adminMessage && <p className="body body--sm">{c.adminMessage}</p>}
             <form action={payQuote}>

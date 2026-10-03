@@ -44,7 +44,7 @@ export function GalleryGrid({ items, filters = [] }: { items: GalleryItem[]; fil
         {shown.map((it, i) => (
           <figure key={it.id} className={"mcell mcell--" + it.format} style={{ ["--i" as string]: i % 12 }}>
             <button type="button" onClick={() => setBox(i)} aria-label={"Agrandir : " + (it.caption ?? it.alt)}>
-              <Image src={it.url} alt={it.alt} fill sizes="(min-width: 1100px) 33vw, (min-width: 640px) 50vw, 100vw" className="media-img" />
+              <Image src={it.url} alt={it.alt} fill sizes="(min-width: 1100px) 33vw, (min-width: 640px) 50vw, 100vw" className="media-img" style={{ objectFit: "cover" }} />
             </button>
             {it.caption && <figcaption>{it.caption}</figcaption>}
           </figure>

@@ -104,6 +104,7 @@ export const site: SiteContent = {
     { label: "Événements", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
+    { label: "Contact", href: "/contact" },
   ],
 
   // Menu complet (plein écran)
@@ -115,6 +116,7 @@ export const site: SiteContent = {
     { label: "Événements & fêtes", href: "/evenements" },
     { label: "Galerie", href: "/galerie" },
     { label: "Nous trouver", href: "/nous-trouver" },
+    { label: "Contact", href: "/contact" },
   ],
 
   local: {

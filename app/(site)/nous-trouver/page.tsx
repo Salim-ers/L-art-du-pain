@@ -23,7 +23,7 @@ export default async function NousTrouverPage() {
   const reviews = await getReviews();
   return (
     <main id="contenu">
-      <JsonLd data={localBusinessJsonLd({ reviews: reviews.items })} />
+      <JsonLd data={localBusinessJsonLd({ reviews: reviews.own ? reviews.items : [] })} />
       <PageHero
         compact
         crumbs={[{ name: "Nous trouver", path: "/nous-trouver" }]}

@@ -90,14 +90,15 @@ export default async function CustomPage({ params }: { params: { id: string } })
                   <input type="hidden" name="id" value={c.id} />
                   <input type="hidden" name="action" value="quote" />
                   <input type="hidden" name="back" value={back} />
-                  <label className="afield"><span>Montant du devis (€)</span><input name="quote" inputMode="decimal" required defaultValue={c.quoteCents ? (c.quoteCents / 100).toFixed(2).replace(".", ",") : c.estimateCents ? (c.estimateCents / 100).toFixed(2).replace(".", ",") : ""} /></label>
+                  <p className="afield-label afield--full">Valider la demande : le client reçoit par email le récapitulatif complet, le prix et un lien pour payer l’acompte. La commande est confirmée dès le paiement.</p>
+                  <label className="afield"><span>Prix total (€)</span><input name="quote" inputMode="decimal" required defaultValue={c.quoteCents ? (c.quoteCents / 100).toFixed(2).replace(".", ",") : c.estimateCents ? (c.estimateCents / 100).toFixed(2).replace(".", ",") : ""} /></label>
                   <label className="afield"><span>Acompte</span>
                     <select name="deposit" defaultValue={String(c.depositPercent ?? payments.depositPercent)}>
                       {[0, 30, 50, 100].map((v) => <option key={v} value={v}>{v === 0 ? "Aucun" : v + " %"}</option>)}
                     </select>
                   </label>
-                  <label className="afield"><span>Message</span><input name="message" maxLength={1500} placeholder="Détail du devis, décor…" /></label>
-                  <Submit>Envoyer le devis</Submit>
+                  <label className="afield"><span>Message au client (facultatif)</span><input name="message" maxLength={1500} placeholder="Détail du décor, conseils de conservation…" /></label>
+                  <Submit>Valider et demander l’acompte</Submit>
                 </form>
               )}
               {c.status === "quote_sent" && <p className="amuted">Lien de devis envoyé au client : <a className="alink" href={quoteLink(c)} target="_blank" rel="noopener">{quoteLink(c).replace(/t=.*/, "t=…")}</a></p>}

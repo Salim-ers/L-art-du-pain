@@ -99,6 +99,26 @@ function itemsTable(items: OrderItem[]) {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 18px">${rows}</table>`;
 }
 
+/** Récapitulatif complet d'une demande (gâteau sur mesure ou commande particulière), pour les emails. */
+function customRecap(c: CustomOrder) {
+  const special = c.kind === "special";
+  const all: [string | null, string | null][] = [
+    ["Référence", c.number],
+    [special ? "Demande" : "Occasion", c.occasion],
+    [special ? "Quantité" : "Personnes", c.servings],
+    [special ? null : "Gâteau", special ? null : c.cakeType],
+    ["Saveurs", c.flavors.length ? c.flavors.join(" / ") : null],
+    ["Inscription", c.message ? `« ${c.message} »` : null],
+    ["Retrait", `${formatDate(c.desiredDate)}${c.desiredTime ? " à " + formatTime(c.desiredTime) : ""} — ${site.address.street}, ${site.address.city}`],
+    ["Précisions", c.comment],
+  ];
+  const rows = all.filter((r): r is [string, string] => !!r[0] && !!r[1]);
+  const html = rows
+    .map(([k, v]) => `<tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid #EFE9DF;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8A7A68;white-space:nowrap;vertical-align:top">${esc(k)}</td><td style="padding:8px 0;border-bottom:1px solid #EFE9DF;font-size:14px;color:#3A2E24">${esc(v)}</td></tr>`)
+    .join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 20px">${html}</table>`;
+}
+
 const what = (c: Pick<CustomOrder, "kind">) => (c.kind === "special" ? "commande particulière" : "gâteau sur mesure");
 
 const pickupLine = (o: Pick<Order, "pickupDate" | "pickupTime">) =>
@@ -136,16 +156,34 @@ export const mails = {
       ),
       p(`Référence : ${c.number}`),
     ]),
-  customQuote: (c: CustomOrder, link: string) =>
-    layout(`Votre devis — ${what(c)}`, [
-      p(`Bonjour ${c.firstName}, voici notre proposition pour votre ${c.kind === "special" ? "commande" : "gâteau"} du ${formatDate(c.desiredDate)} : ${money(c.quoteCents ?? 0)}.`),
-      c.adminMessage ? p(c.adminMessage) : "",
-      p(c.depositPercent ? `Un acompte de ${c.depositPercent} % (${money(Math.round(((c.quoteCents ?? 0) * c.depositPercent) / 100))}) confirme la commande.` : "Validez le devis en ligne pour confirmer la commande."),
-    ], { label: "Voir et valider le devis", href: link }),
+  customQuote: (c: CustomOrder, link: string) => {
+    const deposit = c.depositPercent ? Math.round(((c.quoteCents ?? 0) * c.depositPercent) / 100) : 0;
+    return layout(
+      `Votre demande est validée`,
+      [
+        p(`Bonjour ${c.firstName}, bonne nouvelle : nous pouvons réaliser votre ${c.kind === "special" ? "commande" : "gâteau"}. Voici le récapitulatif.`),
+        customRecap(c),
+        c.adminMessage ? p(c.adminMessage) : "",
+        p(`Prix total : ${money(c.quoteCents ?? 0)}.`),
+        p(
+          deposit > 0
+            ? `Pour lancer la préparation, merci de régler un acompte de ${money(deposit)} (${c.depositPercent} %). Le solde de ${money((c.quoteCents ?? 0) - deposit)} se règle au retrait.`
+            : "Confirmez votre commande en ligne pour lancer la préparation. Le règlement se fait au retrait."
+        ),
+        p("Votre commande est confirmée dès réception de l’acompte ; vous recevez alors un email de confirmation."),
+      ],
+      { label: deposit > 0 ? `Régler l’acompte de ${money(deposit)}` : "Confirmer ma commande", href: link + "#payer" }
+    );
+  },
   customChanges: (c: CustomOrder) =>
     layout(`Votre demande — précisions`, [p(`Bonjour ${c.firstName}, nous avons besoin de quelques précisions sur votre demande ${c.number}.`), c.adminMessage ? p(c.adminMessage) : "", p(site.phone ? `Vous pouvez nous répondre par téléphone au ${site.phone.display}.` : "")]),
   customRefused: (c: CustomOrder) =>
     layout(`Votre demande`, [p(`Bonjour ${c.firstName}, nous ne pouvons malheureusement pas réaliser votre demande ${c.number} pour le ${formatDate(c.desiredDate)}.`), c.adminMessage ? p(c.adminMessage) : ""]),
   customAccepted: (c: CustomOrder, o: Order) =>
-    layout(c.kind === "special" ? "Commande particulière confirmée" : "Gâteau sur mesure confirmé", [p(`Bonjour ${c.firstName}, votre ${c.kind === "special" ? "commande est confirmée" : "gâteau est confirmé"}.`), p(pickupLine(o)), p(paymentLine(o))], { label: "Suivre ma commande", href: trackUrl(o) }),
+    layout(c.kind === "special" ? "Commande particulière confirmée" : "Gâteau sur mesure confirmé", [
+      p(`Bonjour ${c.firstName}, votre ${c.kind === "special" ? "commande est confirmée" : "gâteau est confirmé"} : la préparation est lancée.`),
+      customRecap(c),
+      p(paymentLine(o)),
+      p(pickupLine(o)),
+    ], { label: "Suivre ma commande", href: trackUrl(o) }),
 };

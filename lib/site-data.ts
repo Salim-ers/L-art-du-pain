@@ -4,6 +4,7 @@ import { site } from "@/content/site";
 import { getDb, schema as s } from "@/lib/db";
 import { listCampaigns, type CampaignView } from "@/lib/catalog";
 import { getSetting } from "@/lib/settings";
+import { googleReviews, googleSnapshot } from "@/content/google-reviews";
 
 export const galleryFilters = [
   { id: "tout", label: "Tout" },
@@ -14,14 +15,28 @@ export const galleryFilters = [
   { id: "evenements", label: "Événements" },
 ];
 
+// Anciennes vignettes (moins de 400 px de large) : floues une fois agrandies, jamais affichées dans la galerie.
+const LOW_RES = new Set(["/images/pains.png", "/images/viennoiseries.png", "/images/patisseries-vitrine.png"]);
+
 export async function getGallery() {
   const db = await getDb();
-  return db.select().from(s.media).where(eq(s.media.inGallery, true)).orderBy(asc(s.media.position), asc(s.media.createdAt));
+  const rows = await db.select().from(s.media).where(eq(s.media.inGallery, true)).orderBy(asc(s.media.position), asc(s.media.createdAt));
+  return rows.filter((m) => !LOW_RES.has(m.url));
 }
 
+/**
+ * Avis affichés : ceux saisis dans la gestion, sinon le relevé d'avis Google réels (content/google-reviews.ts).
+ * `own` : avis saisis par la boutique — seuls ceux-là peuvent figurer dans les données structurées.
+ */
 export async function getReviews() {
   const r = await getSetting("reviews");
-  return { items: r.items, url: r.googleReviewUrl || site.links.review };
+  const own = r.items.length > 0;
+  return {
+    items: own ? r.items : googleReviews,
+    url: r.googleReviewUrl || site.links.review,
+    own,
+    summary: own ? null : googleSnapshot,
+  };
 }
 
 /** Campagne mise en avant : ouverte en priorité, sinon prochaine publiée. */

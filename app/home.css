@@ -1,16 +1,16 @@
 /* ==========================================================================
-   Accueil et parcours de commande â€” sections de la refonte.
-   MÃªmes principes que le reste du site : angles droits, photographie en grand,
+   Accueil et parcours de commande — sections de la refonte.
+   Mêmes principes que le reste du site : angles droits, photographie en grand,
    typographie serif, animations courtes (transform / opacity / clip-path).
    ========================================================================== */
 
 /* ---------- Hero : deux actions, un lien discret ---------- */
 .hero-order--ghost { background: transparent; color: var(--ivory); box-shadow: inset 0 0 0 1px rgba(242, 237, 228, .6); }
 .hero-order--ghost:hover { background: var(--ivory); color: var(--ink); box-shadow: none; }
-.hero-city::before { content: "â€”"; margin: 0 .6em; opacity: .6; }
+.hero-city::before { content: "\2014"; margin: 0 .6em; opacity: .6; }
 @media (max-width: 560px) { .hero-city { display: block; margin-top: 4px; } .hero-city::before { content: none; } }
 
-/* ---------- Nos crÃ©ations ---------- */
+/* ---------- Nos créations ---------- */
 .fams { padding-top: clamp(80px, 14vh, 170px); padding-bottom: clamp(70px, 12vh, 150px); }
 .fams-head { display: flex; flex-direction: column; gap: 18px; margin-bottom: clamp(32px, 6vh, 72px); }
 .fams-grid { display: grid; gap: clamp(12px, 1.6vw, 24px); grid-template-columns: minmax(0, 1fr); }
@@ -29,7 +29,7 @@
 .fam2--text .fam2-text { position: relative; }
 @media (min-width: 700px) {
   .fams-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  /* Rythme asymÃ©trique (grand / petit, puis l'inverse), Ã  hauteur Ã©gale sur chaque rangÃ©e. */
+  /* Rythme asymétrique (grand / petit, puis l'inverse), à hauteur égale sur chaque rangée. */
   .fam2 { grid-column: span 6; }
   .fam2:nth-child(4n + 1), .fam2:nth-child(4n + 4) { grid-column: span 7; }
   .fam2:nth-child(4n + 2), .fam2:nth-child(4n + 3) { grid-column: span 5; }
@@ -38,16 +38,26 @@
   .fam2:last-child:nth-child(odd) .fam2-media { height: clamp(280px, 42vh, 440px); }
 }
 
-/* ---------- GÃ¢teaux sur mesure ---------- */
+/* ---------- Gâteaux sur mesure ---------- */
 .cake { background: var(--cocoa); color: var(--ivory); }
 .cake-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
 .cake-media { position: relative; aspect-ratio: 1; overflow: hidden; background: #fff; }
-.cake-media .media-img { object-fit: cover; }
+/* Photo détourée sur fond blanc : affichée en entier, jamais recadrée. */
+.cake-media .media-img { object-fit: contain; padding: clamp(16px, 4vw, 56px); }
 .cake-text { display: flex; flex-direction: column; justify-content: center; gap: clamp(20px, 3.4vh, 34px); padding-top: clamp(56px, 10vh, 120px); padding-bottom: clamp(56px, 10vh, 120px); }
 .cake-intro { margin: 0; max-width: 44ch; font-size: clamp(15px, 1.15vw, 18px); line-height: 1.7; font-weight: 300; color: rgba(242, 237, 228, .82); }
-.cake-occasions { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; max-width: 560px; }
-.cake-occasions a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid rgba(242, 237, 228, .28); font-size: 12px; letter-spacing: .08em; transition: border-color .4s var(--ease), background-color .4s var(--ease), color .4s var(--ease); }
+/* Occasions : de vraies cases cliquables, bien visibles — chacune ouvre le configurateur. */
+.cake-occasions { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr)); max-width: 640px; }
+.cake-occasions a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 0 18px;
+  border: 1px solid rgba(242, 237, 228, .5); background: rgba(242, 237, 228, .07);
+  font-family: var(--serif); font-size: clamp(1.15rem, 1.5vw, 1.35rem); line-height: 1.1;
+  transition: border-color .4s var(--ease), background-color .4s var(--ease), color .4s var(--ease);
+}
+.cake-occasions a::after { content: "\2192"; font-family: var(--sans); font-size: 16px; opacity: .7; transition: transform .5s var(--ease); }
 .cake-occasions a:hover, .cake-occasions a:focus-visible { border-color: var(--ivory); background: var(--ivory); color: var(--ink); }
+.cake-occasions a:hover::after, .cake-occasions a:focus-visible::after { transform: translateX(4px); }
+.cake .btn { min-height: 58px; padding: 18px 36px; font-size: 12px; }
 @media (min-width: 900px) {
   .cake-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: min(100svh, 920px); }
   .cake-media { aspect-ratio: auto; min-height: 100%; }
@@ -72,7 +82,7 @@
 .hgal-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: clamp(28px, 5vh, 56px); }
 .hgal-head > div { display: flex; flex-direction: column; gap: 16px; }
 
-/* ---------- RÃ©assurance ---------- */
+/* ---------- Réassurance ---------- */
 .assure { list-style: none; margin: 0 auto clamp(56px, 10vh, 120px); padding: clamp(24px, 4vh, 40px) 0 0; display: grid; gap: clamp(20px, 3vw, 44px); grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); border-top: 1px solid var(--line); }
 .assure li { display: flex; flex-direction: column; gap: 8px; }
 .assure strong { font-family: var(--serif); font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.1; }
@@ -82,7 +92,7 @@
 .footer-cta-copy { display: flex; flex-direction: column; gap: 14px; }
 .footer-cta-text { margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.65; font-weight: 300; color: rgba(242, 237, 228, .72); }
 
-/* ---------- Formulaire Â« commande particuliÃ¨re Â» ---------- */
+/* ---------- Formulaire « commande particulière » ---------- */
 .form.special { gap: clamp(22px, 4vh, 36px); align-items: stretch; width: 100%; }
 .special .opts { width: 100%; }
 .special-block { border: 0; margin: 0; padding: 0; min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 16px; }
@@ -91,7 +101,7 @@
 .field-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); line-height: 1.6; }
 .drop--sm { min-height: 120px; font-size: 1.1rem; }
 
-/* ---------- DonnÃ©es d'exemple et vente en boutique ---------- */
+/* ---------- Données d'exemple et vente en boutique ---------- */
 .demo-note { margin: 0; padding: 12px 16px; border: 1px dashed rgba(22, 18, 14, .35); font-size: 13px; line-height: 1.55; color: var(--text); }
 .demo-note strong { font-weight: 600; }
 .pcard-badge[data-demo] { background: var(--terra-deep); color: var(--ivory); }
@@ -103,3 +113,30 @@
 .form.special > .btn { align-self: flex-start; }
 .camp-demo .demo-note { margin-bottom: clamp(24px, 4vh, 40px); color: rgba(242, 237, 228, .82); border-color: rgba(242, 237, 228, .35); }
 .camp-demo .demo-note strong { color: var(--ivory); }
+
+/* ---------- Avis clients ---------- */
+.rv-head { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; margin-bottom: clamp(28px, 5vh, 56px); }
+.rv-summary { margin: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 10px; font-size: 15px; color: var(--text); }
+.rv-summary strong { font-weight: 600; color: var(--ink); }
+.rv-summary small { color: var(--muted); font-size: 12px; }
+.rv-stars { color: #C9932E; letter-spacing: .12em; font-size: 15px; }
+.rv-stars-off { color: rgba(22, 18, 14, .18); }
+.rv-grid { list-style: none; margin-top: 0; margin-bottom: 0; padding: 0; display: grid; gap: clamp(12px, 1.6vw, 22px); grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.rv-card { display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 2.4vw, 32px); background: var(--cream, #FAF6EF); border: 1px solid var(--line); }
+.rv-card blockquote { margin: 0; flex: 1; font-family: var(--serif); font-size: clamp(1.1rem, 1.35vw, 1.3rem); line-height: 1.45; color: var(--ink); }
+.rv-author { margin: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.rv-author small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.rv-foot { display: flex; justify-content: center; margin-top: clamp(28px, 5vh, 48px); }
+
+/* ---------- Contact ---------- */
+.contact-page { padding-top: clamp(20px, 4vh, 40px); padding-bottom: clamp(80px, 14vh, 160px); }
+.contact-page-grid { display: grid; gap: clamp(32px, 5vw, 80px); grid-template-columns: minmax(0, 1fr); align-items: start; }
+.contact-page-grid .form { width: 100%; align-items: stretch; }
+.contact-page-grid .form .btn { align-self: flex-start; }
+.contact-aside { display: flex; flex-direction: column; gap: 16px; padding: clamp(22px, 2.4vw, 32px); background: var(--cream, #FAF6EF); border: 1px solid var(--line); font-size: 15px; }
+@media (min-width: 900px) { .contact-page-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+/* Écrans moyens (portable 13") : le menu complet tient sur une ligne, le logo seul suffit à identifier la marque. */
+@media (min-width: 1180px) and (max-width: 1439px) {
+  .hdr .brand > span { display: none; }
+  .nav { gap: clamp(16px, 1.6vw, 26px); letter-spacing: .16em; }
+}

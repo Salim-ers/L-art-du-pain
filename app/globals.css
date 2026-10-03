@@ -74,7 +74,8 @@ section[id], footer[id] { scroll-margin-top: calc(var(--hdr) + 28px); }
 .accent { color: var(--terra-deep); }
 .blush { color: var(--blush); }
 
-.line { display: block; overflow: hidden; padding-bottom: .04em; }
+/* Marge basse : les jambages (g, p, ç) des titres en italique ne sont jamais rognés par le masque. */
+.line { display: block; overflow: hidden; padding-bottom: .18em; margin-bottom: -.14em; }
 .line > span { display: block; }
 
 /* ---------- Reveals (masks, directional — never a bare fade) ---------- */

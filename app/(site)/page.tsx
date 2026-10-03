@@ -32,7 +32,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd data={localBusinessJsonLd({ reviews: reviews.items })} />
+      <JsonLd data={localBusinessJsonLd({ reviews: reviews.own ? reviews.items : [] })} />
       <Intro />
       <main id="contenu">
         <Hero />
@@ -40,7 +40,7 @@ export default async function HomePage() {
         <CustomCake occasions={cake.occasions} />
         <Maison />
         <HomeGallery items={gallery.map((m) => ({ id: m.id, url: m.url, alt: m.alt, caption: m.caption, category: m.category, format: m.format }))} />
-        <Reviews items={reviews.items} reviewUrl={reviews.url} reassurance={reassurance.items} />
+        <Reviews items={reviews.items} reviewUrl={reviews.url} reassurance={reassurance.items} summary={reviews.summary} />
         <Location />
       </main>
     </>

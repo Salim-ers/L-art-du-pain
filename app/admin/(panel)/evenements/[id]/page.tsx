@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { eventKinds } from "@/lib/event-templates";
 import { notFound } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
 import { Card, Kpi, PageTitle } from "@/components/admin/bits";
@@ -14,10 +15,8 @@ import { saveEvent } from "../../../actions";
 
 export const metadata = { title: "Campagne" };
 
-const kinds = [
-  ["noel", "Noël"], ["nouvel-an", "Nouvel An"], ["epiphanie", "Épiphanie / galettes"], ["saint-valentin", "Saint-Valentin"], ["paques", "Pâques"],
-  ["ramadan", "Ramadan"], ["aid", "Aïd"], ["fete-des-meres", "Fête des mères"], ["fete-des-peres", "Fête des pères"], ["mariages", "Mariages"], ["custom", "Autre"],
-];
+// Types d'événements (une valeur déjà enregistrée hors liste reste proposée).
+const kinds = eventKinds;
 
 
 export default async function EventForm({ params }: { params: { id: string } }) {
@@ -57,7 +56,9 @@ export default async function EventForm({ params }: { params: { id: string } }) 
             <div className="aform aform--grid">
               <label className="afield"><span>Nom interne</span><input name="name" defaultValue={e?.name} required placeholder="Noël 2026" /></label>
               <label className="afield"><span>Type</span>
-                <select name="kind" defaultValue={e?.kind ?? "custom"}>{kinds.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
+                <select name="kind" defaultValue={e?.kind ?? "custom"}>
+                  {[...kinds, ...(e && !kinds.some(([k]) => k === e.kind) ? [[e.kind, e.kind] as [string, string]] : [])].map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                </select>
               </label>
               <label className="afield"><span>Adresse (slug)</span><input name="slug" defaultValue={e?.slug} placeholder="automatique" /></label>
               <label className="afield"><span>Ordre</span><input type="number" name="position" defaultValue={e?.position ?? 0} /></label>
@@ -101,7 +102,7 @@ export default async function EventForm({ params }: { params: { id: string } }) 
             <label className="afield"><span>Photo plein écran (sinon ambiance lumineuse par défaut)</span><ImageInput name="imageFile" /></label>
           </Card>
           <Card title="Publication">
-            <label className="acheck"><input type="checkbox" name="published" defaultChecked={e?.published} /> Publiée sur le site</label>
+            <label className="acheck"><input type="checkbox" name="published" defaultChecked={e?.published} /> Activé (visible sur le site)</label>
           </Card>
           <div className="asticky-save"><Submit className="abtn abtn--lg">Enregistrer la campagne</Submit></div>
         </div>

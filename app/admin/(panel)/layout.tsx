@@ -36,7 +36,6 @@ export default async function PanelLayout({ children }: { children: ReactNode })
     ...(admin
       ? [
           { href: "/admin/evenements", label: "Événements" },
-          { href: "/admin/noel", label: "Noël" },
           { href: "/admin/promotions", label: "Promotions" },
         ]
       : []),
