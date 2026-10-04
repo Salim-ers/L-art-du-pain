@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
-import { Location } from "@/components/Location";
+import { Directions } from "@/components/Directions";
+import { mapSrc } from "@/components/Location";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { ContactForm } from "@/components/shop/Forms";
@@ -20,30 +21,59 @@ export const metadata: Metadata = {
 
 export default async function NousTrouverPage() {
   const reviews = await getReviews();
+  const { address, phone, hours, links } = site;
   return (
     <main id="contenu">
       <JsonLd data={localBusinessJsonLd({ reviews: reviews.own ? reviews.items : [] })} />
       <PageHero
         compact
         crumbs={[{ name: "Contact", path: "/nous-trouver" }]}
-        label={`${site.address.street} — ${site.address.postalCode} ${site.address.city}`}
-        title={["Contact", <span key="i" className="it accent">& accès.</span>]}
+        title={[<span key="t">Contact <span className="it accent">& accès.</span></span>]}
         intro={<p>La boutique se trouve à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul.</p>}
       />
-      <section id="contact" className="section contact">
-        <div className="wrap contact-grid">
-          <div className="stack">
-            <Reveal as="p" className="label">Contact</Reveal>
-            <Reveal as="h2" className="h-lg">Nous écrire</Reveal>
-            <Reveal as="p" className="body body--sm">
-              Une question sur un produit, une commande pour une entreprise, une allergie ? Écrivez-nous
-              {site.phone ? <>, ou appelez le <a className="ulink" href={"tel:" + site.phone.tel}><span>{site.phone.display}</span></a></> : null}.
-            </Reveal>
-          </div>
-          <ContactForm />
+
+      {/* Formulaire et accès côte à côte (empilés sur mobile : d'abord « Nous écrire »). */}
+      <section className="section cpage">
+        <div className="wrap cpage-grid">
+          <Reveal className="cpage-form" id="contact">
+            <p className="label">Contact</p>
+            <h2 className="h-md">Nous écrire</h2>
+            <p className="body body--sm">Une question sur un produit, une allergie, une commande pour une entreprise ? Nous vous répondons rapidement.</p>
+            <ContactForm />
+          </Reveal>
+
+          <Reveal as="aside" className="cpage-info" delay={0.08} aria-label="Venez nous voir">
+            <p className="label label--light">La boutique</p>
+            <h2 className="h-md">Venez nous voir.</h2>
+            <address className="cpage-address">
+              <strong>{site.name}</strong>
+              <span>{address.street}</span>
+              <span>{address.postalCode} {address.city}</span>
+            </address>
+            {phone && (
+              <a className="cpage-phone" href={"tel:" + phone.tel}>
+                {phone.display}
+              </a>
+            )}
+            {hours && (
+              <p className="cpage-hours">
+                <span>Horaires</span>
+                {hours.display}
+              </p>
+            )}
+            <div className="cpage-actions">
+              <Directions tone="light" withOrder={false} reviewUrl={reviews.url} />
+            </div>
+          </Reveal>
         </div>
       </section>
-      <Location />
+
+      <section className="cpage-map" aria-label={"Carte — " + site.name}>
+        <iframe title={"Carte — " + site.name + ", " + address.city} src={mapSrc()} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+        <a className="map-pin" href={links.maps} target="_blank" rel="noopener noreferrer">
+          {site.name} — {address.city} ↗
+        </a>
+      </section>
     </main>
   );
 }

@@ -142,5 +142,21 @@
 .hdr .hdr-cta:hover { background: var(--ivory); border-color: var(--ivory); color: var(--ink); }
 .hdr[data-solid] .hdr-cta:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
 
-/* Page Contact : le formulaire vient d'abord, puis l'accès ; un filet sépare les deux. */
-.contact + .location { border-top: 1px solid var(--line); padding-top: clamp(60px, 10vh, 120px); }
+/* ---------- Page Contact & accès ---------- */
+.cpage { padding-top: clamp(4px, 1.5vh, 16px); padding-bottom: clamp(48px, 8vh, 96px); }
+.cpage-grid { display: grid; gap: clamp(14px, 2vw, 28px); grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+@media (min-width: 960px) { .cpage-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+.cpage-form, .cpage-info { display: flex; flex-direction: column; gap: clamp(14px, 2.2vh, 20px); padding: clamp(22px, 3vw, 44px); }
+.cpage-form { background: var(--cream); border: 1px solid var(--line); }
+.cpage-form .form { width: 100%; align-items: stretch; margin-top: 6px; }
+.cpage-form .form .btn { align-self: flex-start; }
+.cpage-info { background: var(--cocoa); color: var(--ivory); }
+.cpage-address { display: flex; flex-direction: column; gap: 2px; font-style: normal; font-size: 16px; line-height: 1.6; font-weight: 300; color: rgba(242, 237, 228, .82); }
+.cpage-address strong { font-weight: 500; color: var(--ivory); }
+.cpage-phone { align-self: flex-start; font-family: var(--serif); font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.05; border-bottom: 1px solid rgba(242, 237, 228, .3); transition: color .4s var(--ease), border-color .4s var(--ease); }
+.cpage-phone:hover { color: var(--blush); border-color: var(--blush); }
+.cpage-hours { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: rgba(242, 237, 228, .86); }
+.cpage-hours span { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: rgba(242, 237, 228, .5); }
+.cpage-actions { margin-top: auto; padding-top: 8px; }
+.cpage-map { position: relative; height: clamp(300px, 46vh, 500px); background: var(--sand); }
+.cpage-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(1) contrast(.92) sepia(.28) brightness(1.03); }

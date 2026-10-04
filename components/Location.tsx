@@ -3,7 +3,8 @@ import { SectionLabel } from "./SectionLabel";
 import { Line, Reveal } from "./Reveal";
 import { MagneticButton } from "./MagneticButton";
 
-function mapSrc() {
+/** Carte OpenStreetMap centrée sur la boutique (épingle exacte si les coordonnées sont renseignées). */
+export function mapSrc() {
   if (site.geo) {
     const { lat, lng } = site.geo;
     const d = 0.008;
