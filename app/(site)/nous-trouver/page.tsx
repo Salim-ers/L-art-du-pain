@@ -28,9 +28,8 @@ export default async function NousTrouverPage() {
         crumbs={[{ name: "Contact", path: "/nous-trouver" }]}
         label={`${site.address.street} — ${site.address.postalCode} ${site.address.city}`}
         title={["Contact", <span key="i" className="it accent">& accès.</span>]}
-        intro={<p>La boutique se trouve à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul. {site.hours ? site.hours.display + "." : ""} Une question, une allergie, une commande pour une entreprise ? <a className="ulink" href="#contact"><span>Écrivez-nous</span></a>.</p>}
+        intro={<p>La boutique se trouve à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul.</p>}
       />
-      <Location />
       <section id="contact" className="section contact">
         <div className="wrap contact-grid">
           <div className="stack">
@@ -44,6 +43,7 @@ export default async function NousTrouverPage() {
           <ContactForm />
         </div>
       </section>
+      <Location />
     </main>
   );
 }

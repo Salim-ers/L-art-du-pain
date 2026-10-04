@@ -141,3 +141,6 @@
 .hdr .hdr-cta, .hdr[data-solid] .hdr-cta { background: var(--terra-deep); border-color: var(--terra-deep); color: var(--ivory); }
 .hdr .hdr-cta:hover { background: var(--ivory); border-color: var(--ivory); color: var(--ink); }
 .hdr[data-solid] .hdr-cta:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
+
+/* Page Contact : le formulaire vient d'abord, puis l'accès ; un filet sépare les deux. */
+.contact + .location { border-top: 1px solid var(--line); padding-top: clamp(60px, 10vh, 120px); }
