@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { JsonLd } from "@/components/JsonLd";
 import { Directions } from "@/components/Directions";
 import { mapSrc } from "@/components/Location";
@@ -6,6 +7,7 @@ import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { ContactForm } from "@/components/shop/Forms";
 import { site } from "@/content/site";
+import { photos } from "@/content/photos";
 import { localBusinessJsonLd } from "@/lib/schema";
 import { getReviews } from "@/lib/site-data";
 
@@ -30,6 +32,12 @@ export default async function NousTrouverPage() {
         crumbs={[{ name: "Contact", path: "/nous-trouver" }]}
         title={[<span key="t">Contact <span className="it accent">& accès.</span></span>]}
         intro={<p>La boutique se trouve à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul.</p>}
+        aside={
+          <figure className="phero-photo">
+            <Image src={photos.counter.src} alt={photos.counter.alt} fill priority sizes="(min-width: 960px) 44vw, 100vw" className="media-img" />
+            <figcaption>La boutique — {address.street}</figcaption>
+          </figure>
+        }
       />
 
       {/* Formulaire et accès côte à côte (empilés sur mobile : d'abord « Nous écrire »). */}

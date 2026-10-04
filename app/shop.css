@@ -218,7 +218,7 @@ button.btn--terra { background: var(--terra-deep); color: var(--ivory); }
 /* ---------- En-tête des pages intérieures ---------- */
 .phero { padding-top: calc(var(--hdr) + clamp(36px, 7vh, 90px)); padding-bottom: clamp(36px, 7vh, 80px); }
 .phero--compact { padding-bottom: clamp(20px, 4vh, 40px); }
-.phero-inner { display: flex; flex-direction: column; gap: clamp(16px, 2.6vh, 28px); }
+.phero-main { display: flex; flex-direction: column; gap: clamp(16px, 2.6vh, 28px); min-width: 0; }
 .phero-title { max-width: 18ch; }
 .phero-intro { max-width: 60ch; }
 .phero-intro p { margin: 0 0 10px; }

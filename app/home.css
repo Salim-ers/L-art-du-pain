@@ -63,20 +63,6 @@
   .cake-media { aspect-ratio: auto; min-height: 100%; }
 }
 
-/* ---------- La boutique ---------- */
-.maison { padding-top: clamp(90px, 15vh, 180px); padding-bottom: clamp(90px, 15vh, 180px); }
-.maison-grid { display: grid; gap: clamp(18px, 2.4vw, 36px); grid-template-columns: minmax(0, 1fr); }
-.maison-text { display: flex; flex-direction: column; gap: clamp(18px, 3vh, 30px); }
-.maison-main, .maison-detail { position: relative; overflow: hidden; background: var(--sand); }
-.maison-main { aspect-ratio: 5 / 6; }
-.maison-detail { aspect-ratio: 3 / 2; }
-.maison-main .media-img, .maison-detail .media-img { object-fit: cover; }
-@media (min-width: 900px) {
-  .maison-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr); align-items: end; }
-  .maison-text { align-self: start; padding-top: clamp(20px, 6vh, 80px); }
-  .maison-detail { aspect-ratio: 4 / 5; margin-bottom: clamp(40px, 10vh, 120px); }
-}
-
 /* ---------- Réassurance ---------- */
 .assure { list-style: none; margin: 0 auto clamp(56px, 10vh, 120px); padding: clamp(24px, 4vh, 40px) 0 0; display: grid; gap: clamp(20px, 3vw, 44px); grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); border-top: 1px solid var(--line); }
 .assure li { display: flex; flex-direction: column; gap: 8px; }
@@ -160,3 +146,11 @@
 .cpage-actions { margin-top: auto; padding-top: 8px; }
 .cpage-map { position: relative; height: clamp(300px, 46vh, 500px); background: var(--sand); }
 .cpage-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(1) contrast(.92) sepia(.28) brightness(1.03); }
+
+/* ---------- En-tête de page avec visuel à droite ---------- */
+.phero--split .phero-inner { display: grid; gap: clamp(24px, 4vw, 64px); grid-template-columns: minmax(0, 1fr); align-items: end; }
+@media (min-width: 960px) { .phero--split .phero-inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); } }
+.phero-photo { position: relative; margin: 0; aspect-ratio: 16 / 10; overflow: hidden; background: var(--sand); }
+@media (min-width: 960px) { .phero-photo { aspect-ratio: 5 / 4; } }
+.phero-photo .media-img { object-fit: cover; }
+.phero-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 12px 16px; background: rgba(22, 18, 14, .82); color: var(--ivory); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }

@@ -2,7 +2,6 @@ import { Intro } from "@/components/Intro";
 import { Hero } from "@/components/Hero";
 import { Families } from "@/components/home/Families";
 import { CustomCake } from "@/components/home/CustomCake";
-import { Maison } from "@/components/home/Maison";
 import { Reviews } from "@/components/Reviews";
 import { Location } from "@/components/Location";
 import { JsonLd } from "@/components/JsonLd";
@@ -15,8 +14,8 @@ import { featuredCampaign, getReviews } from "@/lib/site-data";
 export const revalidate = 60;
 
 /**
- * Accueil : 1. hero · 2. nos créations · 3. gâteaux sur mesure · 4. la boutique · 5. avis & réassurance
- * · 6. nous trouver · 7. commandes particulières (appel final, dans le pied de page). La galerie a sa propre page.
+ * Accueil : 1. hero · 2. nos créations · 3. gâteaux sur mesure · 4. avis & réassurance · 5. nous trouver
+ * · 6. commandes particulières (appel final, dans le pied de page). La galerie a sa propre page.
  */
 export default async function HomePage() {
   const [categories, campaign, reviews, cake, reassurance, catalog] = await Promise.all([
@@ -36,7 +35,6 @@ export default async function HomePage() {
         <Hero />
         <Families categories={categories} campaign={campaign} demo={catalog.demo} />
         <CustomCake occasions={cake.occasions} />
-        <Maison />
         <Reviews items={reviews.items} reviewUrl={reviews.url} reassurance={reassurance.items} summary={reviews.summary} />
         <Location />
       </main>

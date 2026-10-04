@@ -42,14 +42,6 @@ export const photos = {
     source: "univers",
     credit: { author: "Conor Brown", url: "https://unsplash.com/photos/sqkXyyj4WdE" },
   },
-  kneading: {
-    src: "/images/univers/petrissage.jpg",
-    alt: "Mains qui pétrissent une pâte sur un plan de travail fariné",
-    width: 2400,
-    height: 1600,
-    source: "univers",
-    credit: { author: "Nadya Spetnitskaya", url: "https://unsplash.com/photos/tOYiQxF9-Ys" },
-  },
 } satisfies Record<string, Photo>;
 
 /** Visuel d'une famille de produits sur l'accueil, à défaut d'une photo ajoutée depuis la gestion. */
