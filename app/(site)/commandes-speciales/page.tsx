@@ -25,7 +25,7 @@ export default function SpecialOrdersPage() {
           </p>
         }
       />
-      <section className="section">
+      <section className="section special-page">
         <div className="wrap narrow">
           <SpecialRequestForm />
         </div>
