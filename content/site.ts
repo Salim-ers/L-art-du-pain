@@ -25,7 +25,8 @@ export type SiteContent = {
   hero: { image: string | null; imageAlt: string; video: string | null };
   nav: { label: string; href: string }[];
   menu: { label: string; href: string }[];
-  local: { title: string; paragraphs: string[]; towns: { name: string; text: string }[] };
+  /** Communes voisines : zone desservie dans les données structurées (référencement local), pas de texte affiché. */
+  areaServed: string[];
   legal: { publisher: string | null; siret: string | null; host: string };
 };
 
@@ -117,20 +118,7 @@ export const site: SiteContent = {
     { label: "Contact", href: "/nous-trouver" },
   ],
 
-  local: {
-    title: "Boulangerie pâtisserie à Nogent-sur-Oise",
-    paragraphs: [
-      "L’Art du Pain est une boulangerie pâtisserie du 28 Avenue Saint-Exupéry, à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul.",
-      "Pour un anniversaire, un baptême ou un événement d’entreprise, faites votre demande de gâteau personnalisé en ligne et retirez-le en boutique au jour choisi. Petits-déjeuners, buffets, grandes quantités : faites-nous une demande, nous revenons vers vous.",
-    ],
-    towns: [
-      { name: "Nogent-sur-Oise", text: "La boutique, au 28 Avenue Saint-Exupéry." },
-      { name: "Creil", text: "Juste de l’autre côté de l’Oise : commandez avant de passer." },
-      { name: "Montataire", text: "Un détour rapide pour vos commandes du week-end." },
-      { name: "Villers-Saint-Paul", text: "Votre gâteau d’anniversaire à retirer à l’heure choisie." },
-      { name: "Monchy-Saint-Éloi", text: "À quelques minutes, pour vos commandes d’événements." },
-    ],
-  },
+  areaServed: ["Nogent-sur-Oise", "Creil", "Montataire", "Villers-Saint-Paul", "Monchy-Saint-Éloi"],
 
   legal: {
     publisher: null, // Raison sociale + forme juridique

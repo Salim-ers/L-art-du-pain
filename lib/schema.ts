@@ -44,7 +44,7 @@ export function localBusinessJsonLd(opts: { reviews?: { text: string; author: st
     description: site.seo.description,
     address: address(),
     parentOrganization: { "@id": ORG_ID },
-    areaServed: site.local.towns.map((t) => ({ "@type": "City", name: t.name })),
+    areaServed: site.areaServed.map((name) => ({ "@type": "City", name })),
     hasMap: site.links.maps,
     priceRange: "€",
     servesCuisine: "Boulangerie, pâtisserie française",

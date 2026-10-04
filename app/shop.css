@@ -251,20 +251,6 @@ button.btn--terra { background: var(--terra-deep); color: var(--ivory); }
 .dir--light .dir-btn:hover, .dir--light .dir-btn--main { background: var(--ivory); color: var(--ink); border-color: var(--ivory); }
 @media (max-width: 560px) { .dir-btn { flex: 1 1 calc(50% - 4px); justify-content: center; text-align: center; } .dir-btn--main { flex-basis: 100%; } }
 
-/* ---------- SEO local ---------- */
-.local { padding-top: clamp(70px, 12vh, 150px); padding-bottom: clamp(40px, 8vh, 90px); border-top: 1px solid var(--line); }
-.local-grid { display: grid; gap: clamp(36px, 5vw, 90px); grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 960px) { .local-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; } }
-.local-main { display: flex; flex-direction: column; gap: clamp(16px, 2.6vh, 26px); }
-.nap { display: flex; flex-direction: column; gap: 2px; font-style: normal; font-size: 15px; line-height: 1.6; font-weight: 300; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.nap strong { font-weight: 500; }
-.nap a { align-self: flex-start; border-bottom: 1px solid var(--line); }
-.towns { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-.towns li { display: flex; flex-direction: column; gap: 4px; padding: 18px 0; border-bottom: 1px solid var(--line); }
-.towns-name { font-family: var(--serif); font-size: clamp(1.3rem, 2vw, 1.8rem); }
-.towns-text { font-size: 13px; line-height: 1.6; font-weight: 300; color: #6A5C4E; }
-.towns-more a { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
-
 /* ---------- Avis ---------- */
 .reviews { padding-top: clamp(60px, 10vh, 130px); }
 .review-stars { display: block; margin-bottom: 18px; color: var(--terra); letter-spacing: .2em; font-size: 14px; }

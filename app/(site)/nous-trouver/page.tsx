@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
-import { LocalSeo } from "@/components/LocalSeo";
 import { Location } from "@/components/Location";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
@@ -29,7 +28,7 @@ export default async function NousTrouverPage() {
         crumbs={[{ name: "Contact", path: "/nous-trouver" }]}
         label={`${site.address.street} — ${site.address.postalCode} ${site.address.city}`}
         title={["Contact", <span key="i" className="it accent">& accès.</span>]}
-        intro={<p>La boutique se trouve à Nogent-sur-Oise, à deux pas de Creil. {site.hours ? site.hours.display + "." : ""} Une question, une allergie, une commande pour une entreprise ? <a className="ulink" href="#contact"><span>Écrivez-nous</span></a>.</p>}
+        intro={<p>La boutique se trouve à Nogent-sur-Oise, à quelques minutes de Creil, Montataire et Villers-Saint-Paul. {site.hours ? site.hours.display + "." : ""} Une question, une allergie, une commande pour une entreprise ? <a className="ulink" href="#contact"><span>Écrivez-nous</span></a>.</p>}
       />
       <Location />
       <section id="contact" className="section contact">
@@ -45,8 +44,6 @@ export default async function NousTrouverPage() {
           <ContactForm />
         </div>
       </section>
-      {/* Zone desservie (référencement local), après l’essentiel : adresse et contact. */}
-      <LocalSeo reviewUrl={reviews.url} />
     </main>
   );
 }
